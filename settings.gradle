@@ -10,6 +10,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Module-specific build.gradle
+
+        repositories {
+            maven { url "https://jitpack.io" }
+        }
+
     }
 }
 rootProject.name = "plasticFreeRiver"

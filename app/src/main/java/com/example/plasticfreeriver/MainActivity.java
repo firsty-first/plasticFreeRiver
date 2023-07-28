@@ -17,10 +17,10 @@ ActivityMainBinding binding;
         super.onCreate(savedInstanceState);
 binding=ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFrag(new homeFragment());//by default home frag
+        replaceFrag(new home1Fragment());//by default home frag
         binding.bottomNavView.setOnItemSelectedListener(item -> {
             if(item.getItemId()==R.id.home)
-                replaceFrag(new homeFragment());
+                replaceFrag(new home1Fragment());
                 else if(item.getItemId()==R.id.feed)
                 replaceFrag(new feedFragment());
                     else
