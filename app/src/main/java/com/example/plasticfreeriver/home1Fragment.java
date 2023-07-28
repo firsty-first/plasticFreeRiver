@@ -80,7 +80,7 @@ View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
 View buttonview=rootview.findViewById(R.id.btn);
         img=rootview.findViewById(R.id.imageView);
 
-       
+
 buttonview.setOnClickListener(this);
 
         return rootview;
@@ -96,8 +96,6 @@ buttonview.setOnClickListener(this);
                     .compress(1024)            //Final image size will be less than 1 MB(Optional)
                     .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
                     // Path: /storage/sdcard0/Android/data/package/files/ImagePicker
-
-
                     .start();
 
 
@@ -108,7 +106,6 @@ buttonview.setOnClickListener(this);
         if (resultCode == Activity.RESULT_OK) {
             // Image Uri will not be null for RESULT_OK
             Uri uri = data.getData();
-
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(uri);
