@@ -149,7 +149,6 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location mLastLocation = locationResult.getLastLocation();
-                S
                 log.d( Double.toString(mLastLocation.getLatitude()));
                 Log.d(Double.toString( mLastLocation.getLongitude());
 //                latitudeTextView.setText("Latitude: " + mLastLocation.getLatitude() + "");
