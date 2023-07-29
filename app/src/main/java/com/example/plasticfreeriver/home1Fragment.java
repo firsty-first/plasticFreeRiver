@@ -3,17 +3,20 @@ package com.example.plasticfreeriver;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -35,10 +38,18 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    public String location;
+
+
 View img;
+
 
     public home1Fragment() {
         // Required empty public constructor
+    }
+    private String getSavedStringFromSharedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        return sharedPreferences.getString("key",""); // The second parameter is the default value if the key is not found.
     }
 
     /**
@@ -66,8 +77,7 @@ View img;
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
+        location = getSavedStringFromSharedPreferences();
     }
 
     @Override
@@ -83,6 +93,10 @@ View buttonview=rootview.findViewById(R.id.btn);
 
 buttonview.setOnClickListener(this);
 
+        TextView tv=rootview.findViewById(R.id.textView);
+
+        //Log.d(this.getArguments().getString("location"));
+        tv.setText(location);
         return rootview;
     }
 
@@ -115,4 +129,5 @@ buttonview.setOnClickListener(this);
             Toast.makeText(getActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

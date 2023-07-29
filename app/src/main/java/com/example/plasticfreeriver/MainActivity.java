@@ -6,16 +6,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
@@ -36,12 +39,11 @@ public class MainActivity extends AppCompatActivity {
 ActivityMainBinding binding;
 public String lattitude;
 public String longitude;
-
+    public String lati;
+    public String longi;
     FusedLocationProviderClient mFusedLocationClient;
 
-    // Initializing other items
-    // from layout file
-    TextView latitudeTextView, longitTextView;
+
     int PERMISSION_ID = 44;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +53,22 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
         replaceFrag(new home1Fragment());//by default home frag
         binding.bottomNavView.setOnItemSelectedListener(item -> {
             if(item.getItemId()==R.id.home)
-                replaceFrag(new home1Fragment());
+
+            {
+                FragmentManager fragmentManager=getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+//                Bundle bundle=new Bundle();
+//                bundle.putString("location",lati+","+longi);
+                fragmentTransaction.replace(R.id.framelayout,new home1Fragment());
+                fragmentTransaction.commit();
+            }
                 else if(item.getItemId()==R.id.feed)
                 replaceFrag(new feedFragment());
                     else
                         replaceFrag(new insightFragment());
 
-
+//
+//
 //            switch (item.getItemId()) {
 //                case R.id.home:
 //                    replaceFrag(new homeFragment());
@@ -79,17 +90,20 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
         // FusedLocationProviderClient
         // object
 
-
-
-
 //            latitudeTextView = findViewById(R.id.latTextView);
 //            longitTextView = findViewById(R.id.lonTextView);
 
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-            // method to get the location
-            getLastLocation();
         }
+      @Override
+      protected void onStart(){
+        super.onStart();
+          mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+
+          // method to get the location
+          getLastLocation();
+      }
+
 
         @SuppressLint("MissingPermission")
         private void getLastLocation() {
@@ -110,8 +124,14 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
                             if (location == null) {
                                 requestNewLocationData();
                             } else {
-                                latitudeTextView.setText(location.getLatitude() + "");
-                                longitTextView.setText(location.getLongitude() + "");
+//                                SharedPreferences pref=getSharedPreferences("userlocation",MODE_PRIVATE);
+//                                 lattitude=pref.getString(lattitude,"");
+                               Toast.makeText(MainActivity.this, Double.toString(location.getLatitude()), Toast.LENGTH_SHORT).show();
+                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("key",Double.toString(location.getLatitude())+","+Double.toString(location.getLongitude()));
+                                editor.apply();
+//
                             }
                         }
                     });
@@ -149,13 +169,15 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location mLastLocation = locationResult.getLastLocation();
-                S
-                log.d( Double.toString(mLastLocation.getLatitude()));
-                Log.d(Double.toString( mLastLocation.getLongitude());
+
+lati= Double.toString(mLastLocation.getLatitude());
+longi=Double.toString(mLastLocation.getLongitude());
+                Bundle bundle=new Bundle();
+                bundle.putString("location",lati+","+longi);
 //                latitudeTextView.setText("Latitude: " + mLastLocation.getLatitude() + "");
 //                longitTextView.setText("Longitude: " + mLastLocation.getLongitude() + "");
             }
-        };
+               };
 
         // method to check for permissions
         private boolean checkPermissions() {
@@ -173,7 +195,6 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
         }
-
         // method to check
         // if location is enabled
         private boolean isLocationEnabled() {
