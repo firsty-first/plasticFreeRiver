@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
 
@@ -39,10 +40,11 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     private String mParam1;
     private String mParam2;
     public String location;
+    FirebaseStorage storage;
 
 
 View img;
-
+Uri global_uri;
 
     public home1Fragment() {
         // Required empty public constructor
@@ -78,6 +80,7 @@ View img;
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         location = getSavedStringFromSharedPreferences();
+        storage=FirebaseStorage.getInstance();
     }
 
     @Override
@@ -89,7 +92,8 @@ View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
 
 View buttonview=rootview.findViewById(R.id.btn);
         img=rootview.findViewById(R.id.imageView);
-
+        View locate=rootview.findViewById(R.id.locate);
+locate.setOnClickListener(this);
 
 buttonview.setOnClickListener(this);
 
@@ -97,6 +101,8 @@ buttonview.setOnClickListener(this);
 
         //Log.d(this.getArguments().getString("location"));
         tv.setText(location);
+        String s= "https://maps.google.com/maps?q="+location;
+      global_uri=Uri.parse(s);
         return rootview;
     }
 
@@ -104,14 +110,20 @@ buttonview.setOnClickListener(this);
     public void onClick(View view) {
 
             Log.d("YourFragment", "Button is clicked!");
-            ImagePicker.with(this)
+            if(view.getId()==R.id.btn) {
+                ImagePicker.with(this)
 
-                    .crop()                    //Crop image(Optional), Check Customization for more option
-                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-                    // Path: /storage/sdcard0/Android/data/package/files/ImagePicker
-                    .start();
+                        .crop()                    //Crop image(Optional), Check Customization for more option
+                        .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+                        // Path: /storage/sdcard0/Android/data/package/files/ImagePicker
+                        .start();
+            }
+            if(view.getId()==R.id.locate)
+            {
+                 openMap(global_uri);
 
+            }
 
     }
     @Override
@@ -123,11 +135,34 @@ buttonview.setOnClickListener(this);
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(uri);
+
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
+    }
+    void openMap(Uri uri)
+    {
+
+
+        Intent imap=new Intent(Intent.ACTION_VIEW,uri);
+        imap.setPackage("com.google.android.apps.maps");
+        //com.google.android.apps.maps
+    //
+        if (imap.resolveActivity(getContext().getPackageManager()) != null) {
+            Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
+         startActivity(imap);
+        }
+        else
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+                Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+    //    }
+    }
+      // startActivity(imap);
     }
 
 }
