@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        mlModelBinding true
     }
 }
 
@@ -46,6 +47,9 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
 
     testImplementation 'junit:junit:4.12'
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +21,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.plasticfreeriver.ml.BestFloat16;
+import com.example.plasticfreeriver.ml.BestFloat32;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.storage.FirebaseStorage;
 
+import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.support.label.Category;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,8 +50,7 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     private String mParam2;
     public String location;
     FirebaseStorage storage;
-
-
+String resultfromModel;
 View img;
 Uri global_uri;
 
@@ -100,7 +108,7 @@ buttonview.setOnClickListener(this);
         TextView tv=rootview.findViewById(R.id.textView);
 
         //Log.d(this.getArguments().getString("location"));
-        tv.setText(location);
+     //   tv.setText(resultfromModel);
         String s= "https://maps.google.com/maps?q="+location;
       global_uri=Uri.parse(s);
         return rootview;
@@ -135,6 +143,8 @@ buttonview.setOnClickListener(this);
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(uri);
+           // model_32(uri);
+            model_16(uri);
 
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
@@ -142,6 +152,27 @@ buttonview.setOnClickListener(this);
             Toast.makeText(getActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
     }
+
+ void model_16(Uri uri) {
+     try {
+         BestFloat16 model = BestFloat16.newInstance(getContext());
+         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+
+         // Creates inputs for reference.
+         TensorImage image = TensorImage.fromBitmap(bitmap);
+
+         // Runs model inference and gets result.
+         BestFloat16.Outputs outputs = model.process(image);
+         List<Category> output = outputs.getOutputAsCategoryList();
+
+         // Releases model resources if no longer used.
+         model.close();
+     } catch (IOException e) {
+         // TODO Handle the exception
+     }
+
+ }
+
     void openMap(Uri uri)
     {
 
@@ -151,18 +182,52 @@ buttonview.setOnClickListener(this);
         //com.google.android.apps.maps
     //
         if (imap.resolveActivity(getContext().getPackageManager()) != null) {
-            Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
+
          startActivity(imap);
         }
         else
         {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 //            if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-                Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
     //    }
     }
       // startActivity(imap);
+    }
+    void model_32(Uri uri)
+    {
+        try {
+            BestFloat32 model = BestFloat32.newInstance(getContext());
+
+            // Creates inputs for reference.
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+
+            TensorImage image = TensorImage.fromBitmap(bitmap);
+
+            // Runs model inference and gets result.
+            BestFloat32.Outputs outputs = model.process(image);
+            List<Category> output = outputs.getOutputAsCategoryList();
+            // Accessing the first element (index 0) in the output list
+//            Category firstCategory = output.get(0);
+//            String firstClassLabel = firstCategory.getLabel();
+//            float firstConfidenceScore = firstCategory.getScore();
+
+
+// Accessing the second element (index 1) in the output list
+//            Category secondCategory = output.get(1);
+//            String secondClassLabel = secondCategory.getLabel();
+//            float secondConfidenceScore = secondCategory.getScore();
+//resultfromModel=firstClassLabel+","+Float.toString(firstConfidenceScore);
+
+            // Releases model resources if no longer used.
+            model.close();
+        } catch (IOException e) {
+            // TODO Handle the exception
+
+
+        }
+
     }
 
 }
