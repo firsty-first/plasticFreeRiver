@@ -7,6 +7,10 @@ plugins {
 android {
     namespace 'com.example.plasticfreeriver'
     compileSdk 33
+    aaptOptions {
+        noCompress "best_float16.tflite"
+        noCompress "best_float32.tflite"
+    }
 
     defaultConfig {
         ndk {
@@ -47,7 +51,7 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.firebase:firebase-storage:20.1.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+       implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
     implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
 

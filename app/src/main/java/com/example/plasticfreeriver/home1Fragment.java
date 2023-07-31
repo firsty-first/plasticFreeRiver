@@ -17,12 +17,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.plasticfreeriver.ml.BestFloat16;
-import com.example.plasticfreeriver.ml.BestFloat32;
+//import com.example.plasticfreeriver.ml.BestFloat32;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -48,6 +50,8 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    View title_editText;
+    String title;
     public String location;
     FirebaseStorage storage;
 String resultfromModel;
@@ -99,14 +103,22 @@ Uri global_uri;
 View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
 
 View buttonview=rootview.findViewById(R.id.btn);
+View submit_post=rootview.findViewById(R.id.btn_post)
         img=rootview.findViewById(R.id.imageView);
         View locate=rootview.findViewById(R.id.locate);
+        title_editText=(EditText)rootview.findViewById(R.id.editTextTitle);
+        if (title_editText != null) {
+          //  String text = title_editText.getText().toString();
+            // 'text' contains the text entered by the user in the EditText
+        }
+
+
 locate.setOnClickListener(this);
 
 buttonview.setOnClickListener(this);
 
         TextView tv=rootview.findViewById(R.id.textView);
-
+submit_post.setOnClickListener(this);
         //Log.d(this.getArguments().getString("location"));
      //   tv.setText(resultfromModel);
         String s= "https://maps.google.com/maps?q="+location;
@@ -132,6 +144,11 @@ buttonview.setOnClickListener(this);
                  openMap(global_uri);
 
             }
+            if (view.getId()==R.id.btn_post)
+            {
+                title_editText.getT
+
+            }
 
     }
     @Override
@@ -143,8 +160,10 @@ buttonview.setOnClickListener(this);
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(uri);
+
+
            // model_32(uri);
-            model_16(uri);
+           model_16(uri);
 
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
@@ -157,9 +176,10 @@ buttonview.setOnClickListener(this);
      try {
          BestFloat16 model = BestFloat16.newInstance(getContext());
          Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+         Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 448, 448, false);
 
          // Creates inputs for reference.
-         TensorImage image = TensorImage.fromBitmap(bitmap);
+         TensorImage image = TensorImage.fromBitmap(resizedBitmap);
 
          // Runs model inference and gets result.
          BestFloat16.Outputs outputs = model.process(image);
@@ -195,39 +215,40 @@ buttonview.setOnClickListener(this);
     }
       // startActivity(imap);
     }
-    void model_32(Uri uri)
-    {
-        try {
-            BestFloat32 model = BestFloat32.newInstance(getContext());
-
-            // Creates inputs for reference.
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-
-            TensorImage image = TensorImage.fromBitmap(bitmap);
-
-            // Runs model inference and gets result.
-            BestFloat32.Outputs outputs = model.process(image);
-            List<Category> output = outputs.getOutputAsCategoryList();
-            // Accessing the first element (index 0) in the output list
-//            Category firstCategory = output.get(0);
-//            String firstClassLabel = firstCategory.getLabel();
-//            float firstConfidenceScore = firstCategory.getScore();
-
-
-// Accessing the second element (index 1) in the output list
-//            Category secondCategory = output.get(1);
-//            String secondClassLabel = secondCategory.getLabel();
-//            float secondConfidenceScore = secondCategory.getScore();
-//resultfromModel=firstClassLabel+","+Float.toString(firstConfidenceScore);
-
-            // Releases model resources if no longer used.
-            model.close();
-        } catch (IOException e) {
-            // TODO Handle the exception
-
-
-        }
-
-    }
+//    void model_32(Uri uri)
+//    {
+//        try {
+//            BestFloat32 model = BestFloat32.newInstance(getContext());
+//
+//            // Creates inputs for reference.
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+//
+//            TensorImage image = TensorImage.fromBitmap(bitmap);
+//
+//            // Runs model inference and gets result.
+//            BestFloat32.Outputs outputs = model.process(image);
+//            List<Category> output = outputs.getOutputAsCategoryList();
+//            // Accessing the first element (index 0) in the output list
+////            Category firstCategory = output.get(0);
+////            String firstClassLabel = firstCategory.getLabel();
+////            float firstConfidenceScore = firstCategory.getScore();
+//
+//
+//// Accessing the second element (index 1) in the output list
+////            Category secondCategory = output.get(1);
+////            String secondClassLabel = secondCategory.getLabel();
+////            float secondConfidenceScore = secondCategory.getScore();
+////resultfromModel=firstClassLabel+","+Float.toString(firstConfidenceScore);
+//
+//
+//            // Releases model resources if no longer used.
+//            model.close();
+//        } catch (IOException e) {
+//            // TODO Handle the exception
+//
+//
+//        }
+//
+//    }
 
 }
