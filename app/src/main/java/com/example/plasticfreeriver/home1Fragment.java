@@ -103,7 +103,7 @@ Uri global_uri;
 View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
 
 View buttonview=rootview.findViewById(R.id.btn);
-View submit_post=rootview.findViewById(R.id.btn_post)
+View submit_post=rootview.findViewById(R.id.btn_post);
         img=rootview.findViewById(R.id.imageView);
         View locate=rootview.findViewById(R.id.locate);
         title_editText=(EditText)rootview.findViewById(R.id.editTextTitle);
@@ -146,7 +146,7 @@ submit_post.setOnClickListener(this);
             }
             if (view.getId()==R.id.btn_post)
             {
-                title_editText.getT
+             title=   title_editText.getText();
 
             }
 
