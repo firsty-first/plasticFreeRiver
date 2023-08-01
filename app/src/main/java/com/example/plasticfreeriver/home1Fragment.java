@@ -1,7 +1,6 @@
 package com.example.plasticfreeriver;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -31,7 +29,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.label.Category;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,7 +47,8 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    View title_editText;
+    EditText title_editText;
+    Button submit_post,chooseImg;
     String title;
     public String location;
     FirebaseStorage storage;
@@ -102,23 +100,19 @@ Uri global_uri;
 
 View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
 
-View buttonview=rootview.findViewById(R.id.btn);
-View submit_post=rootview.findViewById(R.id.btn_post);
+ chooseImg=rootview.findViewById(R.id.chooseImg);
+ submit_post=rootview.findViewById(R.id.btn_post);
         img=rootview.findViewById(R.id.imageView);
         View locate=rootview.findViewById(R.id.locate);
         title_editText=(EditText)rootview.findViewById(R.id.editTextTitle);
-        if (title_editText != null) {
-          //  String text = title_editText.getText().toString();
-            // 'text' contains the text entered by the user in the EditText
-        }
-
+submit_post.setOnClickListener(this);
 
 locate.setOnClickListener(this);
 
-buttonview.setOnClickListener(this);
+chooseImg.setOnClickListener(this);
 
         TextView tv=rootview.findViewById(R.id.textView);
-submit_post.setOnClickListener(this);
+
         //Log.d(this.getArguments().getString("location"));
      //   tv.setText(resultfromModel);
         String s= "https://maps.google.com/maps?q="+location;
@@ -130,7 +124,7 @@ submit_post.setOnClickListener(this);
     public void onClick(View view) {
 
             Log.d("YourFragment", "Button is clicked!");
-            if(view.getId()==R.id.btn) {
+            if(view.getId()==R.id.chooseImg) {
                 ImagePicker.with(this)
 
                         .crop()                    //Crop image(Optional), Check Customization for more option
@@ -146,7 +140,7 @@ submit_post.setOnClickListener(this);
             }
             if (view.getId()==R.id.btn_post)
             {
-             title=   title_editText.getText();
+             title=   title_editText.getText().toString();
 
             }
 
@@ -163,7 +157,7 @@ submit_post.setOnClickListener(this);
 
 
            // model_32(uri);
-           model_16(uri);
+           //model_16(uri);
 
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
