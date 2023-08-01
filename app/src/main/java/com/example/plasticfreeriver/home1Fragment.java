@@ -24,7 +24,10 @@ import android.widget.Toast;
 import com.example.plasticfreeriver.ml.BestFloat16;
 //import com.example.plasticfreeriver.ml.BestFloat32;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.label.Category;
@@ -50,11 +53,12 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     EditText title_editText;
     Button submit_post,chooseImg;
     String title;
+    ImageView im;
     public String location;
     FirebaseStorage storage;
 String resultfromModel;
 View img;
-Uri global_uri;
+Uri global_uriMap,imageUri;
 
     public home1Fragment() {
         // Required empty public constructor
@@ -116,7 +120,7 @@ chooseImg.setOnClickListener(this);
         //Log.d(this.getArguments().getString("location"));
      //   tv.setText(resultfromModel);
         String s= "https://maps.google.com/maps?q="+location;
-      global_uri=Uri.parse(s);
+      global_uriMap =Uri.parse(s);
         return rootview;
     }
 
@@ -135,43 +139,46 @@ chooseImg.setOnClickListener(this);
             }
             if(view.getId()==R.id.locate)
             {
-                 openMap(global_uri);
-
+              openMap(global_uriMap);
             }
             if (view.getId()==R.id.btn_post)
             {
              title=   title_editText.getText().toString();
-
+final StorageReference reference=storage.getReference().child("Image").child("username");
+                 if(imageUri!=null ) {//do not accept empty ...//that lead to crash
+                     reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                         @Override
+                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                             Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                         }
+                     });
+                 }
+                 else
+                     Toast.makeText(getContext(), "Please choose image", Toast.LENGTH_SHORT).show();
             }
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             // Image Uri will not be null for RESULT_OK
-            Uri uri = data.getData();
+            imageUri = data.getData();
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
-            im.setImageURI(uri);
-
-
+            im.setImageURI(imageUri);
            // model_32(uri);
-           //model_16(uri);
-
+           //model_16(imageUri);
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getActivity(), "Task Cancelled", Toast.LENGTH_SHORT).show();
         }
     }
-
  void model_16(Uri uri) {
      try {
          BestFloat16 model = BestFloat16.newInstance(getContext());
          Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
          Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 448, 448, false);
-
          // Creates inputs for reference.
          TensorImage image = TensorImage.fromBitmap(resizedBitmap);
 
@@ -193,6 +200,7 @@ chooseImg.setOnClickListener(this);
 
         Intent imap=new Intent(Intent.ACTION_VIEW,uri);
         imap.setPackage("com.google.android.apps.maps");
+
         //com.google.android.apps.maps
     //
         if (imap.resolveActivity(getContext().getPackageManager()) != null) {
