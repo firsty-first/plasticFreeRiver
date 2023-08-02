@@ -2,6 +2,10 @@ package com.example.plasticfreeriver;
 
 public class User {
     String userId,name,profile;
+    User()
+    {
+
+    }
 
     public String getUserId() {
         return userId;

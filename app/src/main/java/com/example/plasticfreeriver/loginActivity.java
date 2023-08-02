@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -82,7 +83,18 @@ ProgressDialog progressDialog;
                       if(task.isSuccessful())
                       {
                           FirebaseUser user=auth.getCurrentUser();
+User users=new User();
+users.setName(user.getDisplayName());
+users.setUserId(user.getUid());
+users.setProfile(user.getPhotoUrl().toString());
+database.getReference().child("users").child(user.getUid()).setValue(users);
+Intent intent=new Intent(loginActivity.this,MainActivity.class);
+startActivity(intent);
 
+                      }
+                      else
+                      {
+                          Toast.makeText(loginActivity.this, "error ", Toast.LENGTH_SHORT).show();
                       }
                     }
                 });
