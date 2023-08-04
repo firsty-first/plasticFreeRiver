@@ -8,6 +8,10 @@ public class post {
     private String postedAt;
     private String status;
     private String geotag_url;
+    public post()
+    {
+
+    }
 
     public post(String postId, String img, String postedBy, String title, String postedAt, String status, String geotag_url) {
         this.postId = postId;

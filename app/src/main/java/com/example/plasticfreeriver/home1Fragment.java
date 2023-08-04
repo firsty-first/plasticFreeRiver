@@ -6,7 +6,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
+import java.util.Calendar;
+import java.util.Date;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
@@ -25,6 +26,7 @@ import com.example.plasticfreeriver.ml.BestFloat16;
 //import com.example.plasticfreeriver.ml.BestFloat32;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -56,6 +58,7 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     ImageView im;
     public String location;
     FirebaseStorage storage;
+    FirebaseDatabase database;
 String resultfromModel;
 View img;
 Uri global_uriMap,imageUri;
@@ -95,6 +98,7 @@ Uri global_uriMap,imageUri;
         }
         location = getSavedStringFromSharedPreferences();
         storage=FirebaseStorage.getInstance();
+        database=FirebaseDatabase.getInstance();
     }
 
     @Override
@@ -144,11 +148,32 @@ chooseImg.setOnClickListener(this);
             if (view.getId()==R.id.btn_post)
             {
              title=   title_editText.getText().toString();
-final StorageReference reference=storage.getReference().child("Image").child("username");
+
+                Date currentTime = Calendar.getInstance().getTime();
+final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
                      reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                          @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                             reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                 @Override
+                                 public void onSuccess(Uri uri) {
+                                     post p1=new post();
+                                     p1.setImg(uri.toString());
+                                     p1.setGeotag_url("huu");
+                                     p1.setPostedAt(Long.toString(new Date().getTime()));
+                                     p1.setTitle(title);
+                                     database.getReference().child("posts")
+                                             .push()
+                                             .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                 @Override
+                                                 public void onSuccess(Void unused) {
+                                                     Toast.makeText(getContext(), "posted succesfully", Toast.LENGTH_SHORT).show();
+                                                 }
+                                             });
+
+                                 }
+                             });
                              Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
                          }
                      });
