@@ -7,11 +7,11 @@ plugins {
 android {
     namespace 'com.example.plasticfreeriver'
     compileSdk 33
-    aaptOptions {
-        noCompress "best_float16.tflite"
-        noCompress "best_float32.tflite"
-    }
 
+//    aaptOptions {
+//        noCompress "best_float16.tflite"
+//        noCompress "best_float32.tflite"
+//    }
     defaultConfig {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
@@ -21,7 +21,6 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
