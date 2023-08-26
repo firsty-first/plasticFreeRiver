@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.example.plasticfreeriver.ml.BestFloat16;
 //import com.example.plasticfreeriver.ml.BestFloat32;
+
+import com.example.plasticfreeriver.ml.Model;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
@@ -91,6 +93,7 @@ Uri global_uriMap,imageUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -152,34 +155,53 @@ chooseImg.setOnClickListener(this);
                 Date currentTime = Calendar.getInstance().getTime();
 final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
-                     reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                         @Override
-                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                             reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                 @Override
-                                 public void onSuccess(Uri uri) {
-                                     post p1=new post();
-                                     p1.setImg(uri.toString());
-                                     p1.setGeotag_url("huu");
-                                     p1.setPostedAt(Long.toString(new Date().getTime()));
-                                     p1.setTitle(title);
-                                     database.getReference().child("posts")
-                                             .push()
-                                             .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                 @Override
-                                                 public void onSuccess(Void unused) {
-                                                     Toast.makeText(getContext(), "posted succesfully", Toast.LENGTH_SHORT).show();
-                                                 }
-                                             });
+//                     reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                         @Override
+//                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                             reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                 @Override
+//                                 public void onSuccess(Uri uri) {
+//                                     post p1=new post();
+//                                     p1.setImg(uri.toString());
+//                                     p1.setGeotag_url(global_uriMap.toString());
+//                                     p1.setPostedAt(Long.toString(new Date().getTime()));
+//                                     p1.setTitle(title);
+//                                     database.getReference().child("posts")
+//                                             .push()
+//                                             .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                 @Override
+//                                                 public void onSuccess(Void unused) {
+//                                                     Toast.makeText(getContext(), "posted succesfully", Toast.LENGTH_SHORT).show();
+//                                                 }
+//                                             });
+//
+//                                 }
+//                             });
+//                             Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+//                         }
+//                     });
+Log.d("test","inside");
+                     try {
+                         Log.d("test","deep inside");
+                         Model model = Model.newInstance(getContext());
 
-                                 }
-                             });
-                             Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                         }
-                     });
+                         // Creates inputs for reference.
+                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+
+                         TensorImage image = TensorImage.fromBitmap(bitmap);
+
+                         // Runs model inference and gets result.
+                         Model.Outputs outputs = model.process(image);
+                         List<Category> output = outputs.getOutputAsCategoryList();
+                         Toast.makeText(getContext(), output.size(), Toast.LENGTH_SHORT).show();
+                         // Releases model resources if no longer used.
+                         model.close();
+                     } catch (IOException e) {
+                         // TODO Handle the exception
+                     }
                  }
                  else
-                     Toast.makeText(getContext(), "Please choose image", Toast.LENGTH_SHORT).show();
+                  Toast.makeText(getContext(), "Please choose image", Toast.LENGTH_SHORT).show();
             }
     }
     @Override
@@ -191,8 +213,8 @@ final StorageReference reference=storage.getReference().child("Image").child("us
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(imageUri);
-           // model_32(uri);
-           //model_16(imageUri);
+        //    model_32(imageUri);
+          //model_16(imageUri);
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
         } else {
@@ -272,10 +294,10 @@ final StorageReference reference=storage.getReference().child("Image").child("us
 //            model.close();
 //        } catch (IOException e) {
 //            // TODO Handle the exception
-//
-//
-//        }
-//
-//    }
+
+
+        //}
+
+   // }
 
 }

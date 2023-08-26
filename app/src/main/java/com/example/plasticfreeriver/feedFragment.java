@@ -2,18 +2,33 @@ package com.example.plasticfreeriver;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+
+import java.util.ArrayList;
+//line 80 se start krna hai
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link feedFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class feedFragment extends Fragment {
+    FirebaseDatabase database;
+    FirebaseStorage storage;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -23,6 +38,8 @@ public class feedFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    RecyclerView rv_feed;
+    ArrayList<post>  arrayList;
 
     public feedFragment() {
         // Required empty public constructor
@@ -53,12 +70,40 @@ public class feedFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        storage=FirebaseStorage.getInstance();
+        database=FirebaseDatabase.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view=inflater.inflate(R.layout.fragment_feed, container, false);
+        rv_feed=view.findViewById(R.id.rv_feed);
+        arrayList=new ArrayList<>();
+
+        MyAdapter myAdapter=new MyAdapter(arrayList,getContext());
+        rv_feed.setAdapter(myAdapter);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getContext());
+        rv_feed.setLayoutManager(linearLayoutManager);
+        database.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Toast.makeText(getContext(),"check",1);
+                for(DataSnapshot dataSnapshot : snapshot.getChildren()){
+                        post post=dataSnapshot.getValue(post.class);
+arrayList.add(post);
+                Log.d("check","will display");
+                }
+//arrayList.notify();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_feed, container, false);
+        return view;
     }
 }

@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".feedFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#1A7A87B3"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layout">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -18,24 +23,24 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/profileCV"
 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="400dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:cardCornerRadius="400dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                app:layout_constraintTop_toTopOf="parent">
 
 
             </androidx.cardview.widget.CardView>
 
             <LinearLayout
-                app:layout_constraintBottom_toBottomOf="@+id/profileCV"
-                app:layout_constraintStart_toEndOf="@+id/profileCV"
-                app:layout_constraintTop_toTopOf="@+id/profileCV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="@+id/profileCV"
+                app:layout_constraintStart_toEndOf="@+id/profileCV"
+                app:layout_constraintTop_toTopOf="@+id/profileCV">
 
                 <TextView
                     android:id="@+id/userName"
@@ -47,17 +52,15 @@
                     android:textStyle="bold" />
 
 
-
                 <TextView
                     android:id="@+id/timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1 day ago"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="12sp" />
 
             </LinearLayout>
-
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -68,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="5dp"
-            android:text="PLastic near  hooogly bridge"
+            android:text="PLastic near  So n so river"
             android:textColor="@color/black"
             android:textSize="15sp" />
 
@@ -76,17 +79,18 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="400dp"
-
-            android:layout_marginVertical="5dp"
-            android:layout_gravity="center"/>
-<!--        <androidx.media3.ui.PlayerView-->
-<!--            android:id="@+id/video_view"-->
-<!--            app:bar_gravity="center"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="400dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginVertical="10dp"-->
-<!--            android:visibility="gone" />-->
+            android:background="@drawable/gauravriver"
+android:id="@+id/postImg"
+            android:layout_gravity="center"
+            android:layout_marginVertical="5dp" />
+        <!--        <androidx.media3.ui.PlayerView-->
+        <!--            android:id="@+id/video_view"-->
+        <!--            app:bar_gravity="center"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="400dp"-->
+        <!--            android:layout_gravity="center"-->
+        <!--            android:layout_marginVertical="10dp"-->
+        <!--            android:visibility="gone" />-->
 
         <!-- poll_layout.xml -->
 
@@ -112,11 +116,11 @@
                     android:orientation="vertical">
 
                     <androidx.cardview.widget.CardView
-                        app:cardCornerRadius="500dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_margin="1dp">
+                        android:layout_margin="1dp"
+                        app:cardCornerRadius="500dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -160,7 +164,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="horizontal"/>
+                android:orientation="horizontal" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -182,15 +186,16 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/tick"
-                        app:tint="@color/black" />
+                        app:tint="#1B830F" />
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Done"
-                    android:textColor="@color/black"
-                    android:textSize="13sp" />
+                    android:textColor="#09591B"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </LinearLayout>

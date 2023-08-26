@@ -13,6 +13,15 @@ public class post {
 
     }
 
+    public post(String img, String postedBy, String title, String postedAt, String status, String geotag_url) {
+        this.img = img;
+        this.postedBy = postedBy;
+        this.title = title;
+        this.postedAt = postedAt;
+        this.status = status;
+        this.geotag_url = geotag_url;
+    }
+
     public post(String postId, String img, String postedBy, String title, String postedAt, String status, String geotag_url) {
         this.postId = postId;
         this.img = img;
