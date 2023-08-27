@@ -135,12 +135,14 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
                             }
                         }
                     });
-                } else {
+                }
+                else {
                     Toast.makeText(this, "Please turn on" + " your location...", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                     startActivity(intent);
                 }
-            } else {
+            }
+            else {
                 // if permissions aren't available,
                 // request for permissions
                 requestPermissions();
@@ -157,19 +159,14 @@ binding=ActivityMainBinding.inflate(getLayoutInflater());
             mLocationRequest.setInterval(5);
             mLocationRequest.setFastestInterval(0);
             mLocationRequest.setNumUpdates(1);
-
-            // setting LocationRequest
-            // on FusedLocationClient
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
             mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         }
-
         private LocationCallback mLocationCallback = new LocationCallback() {
 
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location mLastLocation = locationResult.getLastLocation();
-
 lati= Double.toString(mLastLocation.getLatitude());
 longi=Double.toString(mLastLocation.getLongitude());
                 Bundle bundle=new Bundle();
@@ -178,7 +175,6 @@ longi=Double.toString(mLastLocation.getLongitude());
 //                longitTextView.setText("Longitude: " + mLastLocation.getLongitude() + "");
             }
                };
-
         // method to check for permissions
         private boolean checkPermissions() {
             return ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;

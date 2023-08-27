@@ -1,7 +1,7 @@
 package com.example.plasticfreeriver;
 
 public class User {
-    String userId,name,profile;
+    String userId,name, profileImg;
     User()
     {
 
@@ -23,18 +23,18 @@ public class User {
         this.name = name;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getProfileImg() {
+        return profileImg;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
     }
 
     public User(String userId, String name, String profile) {
         this.userId = userId;
         this.name = name;
-        this.profile = profile;
+        this.profileImg = profile;
 
     }
 }

@@ -9,6 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.plasticfreeriver.databinding.RvFeedcardBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -35,6 +40,25 @@ ArrayList<post> list;
     @Override
     public void onBindViewHolder(@NonNull MyAdapter.viewHolder holder, int position) {
 post model=list.get(position);
+        Picasso.get().load(model.getImg())
+                .placeholder(R.drawable.tick)
+                .into(holder.binding.postImg);
+//        FirebaseDatabase.getInstance().getReference().child("posts")
+//                        .addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                                User user=snapshot.getValue(User.class)
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(@NonNull DatabaseError error) {
+//
+//                            }
+//                        });
+
+
+        holder.binding.title.setText(model.getTitle());
+        holder.binding.userName.setText(model.getPostedBy());
     }
 
     @Override
@@ -47,8 +71,6 @@ RvFeedcardBinding binding;
         public viewHolder(@NonNull View itemView) {
             super(itemView);
             binding=RvFeedcardBinding.bind(itemView);
-
-
         }
     }
 }
