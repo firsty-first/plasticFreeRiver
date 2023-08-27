@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +45,10 @@ post model=list.get(position);
         Picasso.get().load(model.getImg())
                 .placeholder(R.drawable.tick)
                 .into(holder.binding.postImg);
+       holder.binding.title.setText(list.get(position).getTitle());
+       holder.binding.postImg.setVisibility(View.VISIBLE);
+        //User user=list.get(position);
+
 //        FirebaseDatabase.getInstance().getReference().child("posts")
 //                        .addValueEventListener(new ValueEventListener() {
 //                            @Override
@@ -56,9 +62,8 @@ post model=list.get(position);
 //                            }
 //                        });
 
-
-        holder.binding.title.setText(model.getTitle());
-        holder.binding.userName.setText(model.getPostedBy());
+//        holder.binding.title.setText(model.getTitle());
+//        holder.binding.userName.setText(model.getPostedBy());
     }
 
     @Override
@@ -68,9 +73,13 @@ post model=list.get(position);
     public class viewHolder extends RecyclerView.ViewHolder
     {
 RvFeedcardBinding binding;
+TextView title;
+ImageView imgDisp;
         public viewHolder(@NonNull View itemView) {
             super(itemView);
             binding=RvFeedcardBinding.bind(itemView);
+            itemView.findViewById(R.id.title);
+            itemView.findViewById(R.id.imageView);
         }
     }
 }

@@ -6,6 +6,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Calendar;
 import java.util.Date;
 import androidx.fragment.app.Fragment;
@@ -41,6 +46,7 @@ import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.image.ImageProcessor;
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.image.ops.ResizeOp;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,9 +70,9 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     public String location;
     FirebaseStorage storage;
     FirebaseDatabase database;
-String resultfromModel;
-View img;
-Uri global_uriMap,imageUri;
+    String resultfromModel;
+    View img;
+    Uri global_uriMap,imageUri;
 
     public home1Fragment() {
         // Required empty public constructor
@@ -133,7 +139,7 @@ chooseImg.setOnClickListener(this);
 
                         .crop()                    //Crop image(Optional), Check Customization for more option
                         .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                        .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+                        .maxResultSize(1024, 1024)    //Final image resolution will be less than 1080 x 1080(Optional)
                         // Path: /storage/sdcard0/Android/data/package/files/ImagePicker
                         .start();
             }
@@ -149,9 +155,9 @@ chooseImg.setOnClickListener(this);
                 Date currentTime = Calendar.getInstance().getTime();
 final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
-                   //  plastic(imageUri);
+                    // plastic(imageUri);
 
-
+                                          //  model_32(imageUri);
 
 
 
@@ -165,7 +171,7 @@ final StorageReference reference=storage.getReference().child("Image").child("us
 
 
 
-                  //   model_32(imageUri);
+                model_32(imageUri);
                      reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                          @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -246,7 +252,7 @@ final StorageReference reference=storage.getReference().child("Image").child("us
                     new ImageProcessor.Builder()
                             .add(new ResizeOp(1024, 1024, ResizeOp.ResizeMethod.BILINEAR))
                             .build();
-            TensorImage tensorImage = new TensorImage(DataType.UINT8);
+            TensorImage tensorImage = new TensorImage(DataType.FLOAT32);
             // Preprocess the image
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
 
@@ -256,7 +262,7 @@ final StorageReference reference=storage.getReference().child("Image").child("us
             TensorImage image = TensorImage.fromBitmap(bitmap);
 
             // Runs model inference and gets result.
-            BestFloat16.Outputs outputs = model.process(image);
+            BestFloat16.Outputs outputs = model.process(tensorImage);
             List<Category> output = outputs.getOutputAsCategoryList();
 
 
@@ -277,6 +283,17 @@ final StorageReference reference=storage.getReference().child("Image").child("us
          // Creates inputs for reference.
          TensorImage image = TensorImage.fromBitmap(resizedBitmap);
 
+
+
+
+
+
+         ByteBuffer inputBuffer = getInputBuffer(resizedBitmap);
+
+         // Perform inference
+         float[][][][] outputArray = new float[1][1024][1024][3];
+         //model.run(inputBuffer, outputArray);
+
          // Runs model inference and gets result.
          BestFloat16.Outputs outputs = model.process(image);
          List<Category> output = outputs.getOutputAsCategoryList();
@@ -292,16 +309,19 @@ final StorageReference reference=storage.getReference().child("Image").child("us
 
     void model_32(Uri uri)
     {
+        String className = "plastic";
         try {
             ModelPlastic model = ModelPlastic.newInstance(getContext());
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
             Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, false);
-
+            TensorBuffer inputfeature=TensorBuffer.createFixedSize(new int[]{1,1024,1024,3},DataType.FLOAT32);
+            inputfeature.loadBuffer(TensorImage.fromBitmap(resizedBitmap).getBuffer());
             // Creates inputs for reference.
-            TensorImage image = TensorImage.fromBitmap(resizedBitmap);
+            //TensorImage image = TensorImage.fromBitmap(resizedBitmap);
 
             // Runs model inference and gets result.
-            ModelPlastic.Outputs outputs = model.process(image);
+
+            ModelPlastic.Outputs outputs = model.process(inputfeature);
             List<Category> output = outputs.getOutputAsCategoryList();
 
             // Releases model resources if no longer used.
@@ -327,6 +347,23 @@ final StorageReference reference=storage.getReference().child("Image").child("us
 
         }
 
+    }
+
+    private ByteBuffer getInputBuffer(Bitmap inputBitmap) {
+        int bytesPerChannel = 4; // Assuming float32 input
+        int inputSize = 1024 * 1024 * 3 * bytesPerChannel; // 1024x1024x3x4
+        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(inputSize);
+        inputBuffer.order(ByteOrder.nativeOrder());
+
+        // Convert Bitmap to ByteBuffer
+        int[] pixels = new int[1024 * 1024];
+        inputBitmap.getPixels(pixels, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
+        for (int pixel : pixels) {
+            inputBuffer.putFloat(((pixel >> 16) & 0xFF) / 255.0f);
+            inputBuffer.putFloat(((pixel >> 8) & 0xFF) / 255.0f);
+            inputBuffer.putFloat((pixel & 0xFF) / 255.0f);
+        }
+        return inputBuffer;
     }
 
 }
