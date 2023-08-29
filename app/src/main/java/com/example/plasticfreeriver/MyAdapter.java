@@ -2,12 +2,15 @@ package com.example.plasticfreeriver;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,15 +45,13 @@ ArrayList<post> list;
     }
     void openMap(Uri uri)
     {
-
-
         Intent imap=new Intent(Intent.ACTION_VIEW,uri);
         imap.setPackage("com.google.android.apps.maps");
 
         //com.google.android.apps.maps
         //
         if (imap.resolveActivity(context.getPackageManager()) != null) {
-
+            Toast.makeText(context, "Could not find google map on your device", Toast.LENGTH_SHORT).show();
         }
         else
         {
@@ -77,6 +78,17 @@ post model=list.get(position);
            public void onClick(View view) {
 
                openMap(Uri.parse(s));
+
+           }
+       });
+       holder.binding.status.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               Toast.makeText(context, "woah", Toast.LENGTH_SHORT).show();
+// Retrieve the drawable resource using the resource identifier
+               //holder.binding.status.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.tick));
+
 
            }
        });

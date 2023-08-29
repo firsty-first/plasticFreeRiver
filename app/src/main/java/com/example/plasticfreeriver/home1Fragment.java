@@ -185,7 +185,7 @@ final StorageReference reference=storage.getReference().child("Image").child("us
                                  public void onSuccess(Uri uri) {
                                      post p1=new post();
                                      p1.setImg(uri.toString());
-                                     p1.setGeotag_url("huu");
+                                     p1.setGeotag_url(global_uriMap.toString());
                                      p1.setPostedBy("gaurav");
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title);
