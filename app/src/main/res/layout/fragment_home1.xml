@@ -41,7 +41,7 @@
                         android:layout_marginTop="10dp"
                         android:gravity="bottom|center|center_vertical"
                         android:text="help us clean"
-                        android:textColor="#F12121"
+                        android:textColor="@color/white"
                         android:textSize="20sp" />
                 </LinearLayout>
 
