@@ -1,6 +1,8 @@
 package com.example.plasticfreeriver;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,15 +40,46 @@ ArrayList<post> list;
 
 
     }
+    void openMap(Uri uri)
+    {
+
+
+        Intent imap=new Intent(Intent.ACTION_VIEW,uri);
+        imap.setPackage("com.google.android.apps.maps");
+
+        //com.google.android.apps.maps
+        //
+        if (imap.resolveActivity(context.getPackageManager()) != null) {
+
+        }
+        else
+        {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//            if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            //Toast.makeText(getContext(), "locating", Toast.LENGTH_SHORT).show();
+            context.startActivity(intent);
+            //    }
+        }
+        // startActivity(imap);
+    }
 
     @Override
     public void onBindViewHolder(@NonNull MyAdapter.viewHolder holder, int position) {
 post model=list.get(position);
         Picasso.get().load(model.getImg())
-                .placeholder(R.drawable.tick)
+                .placeholder(R.drawable.baseline_downloading_24)
                 .into(holder.binding.postImg);
        holder.binding.title.setText(list.get(position).getTitle());
        holder.binding.postImg.setVisibility(View.VISIBLE);
+        String s=list.get(position).getGeotag_url();
+       holder.binding.postImg.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               openMap(Uri.parse(s));
+
+           }
+       });
         //User user=list.get(position);
 
 //        FirebaseDatabase.getInstance().getReference().child("posts")
