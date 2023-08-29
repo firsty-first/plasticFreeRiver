@@ -71,12 +71,7 @@
                     android:backgroundTint="@color/black"
                     android:gravity="right|end" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="215dp"
-                    android:layout_height="107dp"
-                    android:gravity="bottom"
-                    android:text=" " />
+
 
             </LinearLayout>
 
@@ -94,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="text"
-                android:text="Title" />
+                android:hint="enter title here"/>
 
             <Button
                 android:id="@+id/btn_post"

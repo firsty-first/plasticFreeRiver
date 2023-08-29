@@ -30,6 +30,7 @@ import android.widget.Toast;
 //import com.example.plasticfreeriver.ml.BestFloat16;
 ////import com.example.plasticfreeriver.ml.BestFloat32;
 //import com.example.plasticfreeriver.ml.ModelPlastic;
+import com.example.plasticfreeriver.databinding.FragmentHome1Binding;
 import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -74,6 +75,7 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     public String location;
     FirebaseStorage storage;
     FirebaseDatabase database;
+    FragmentHome1Binding binding;
     ImageProcessor imageProcessor;
 String resultfromModel;
 View img;
@@ -114,7 +116,6 @@ Uri global_uriMap,imageUri;
         // Inflate the layout for this fragment
 
 View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
-
  chooseImg=rootview.findViewById(R.id.chooseImg);
  submit_post=rootview.findViewById(R.id.btn_post);
         img=rootview.findViewById(R.id.imageView);
@@ -126,7 +127,7 @@ locate.setOnClickListener(this);
 
 chooseImg.setOnClickListener(this);
 
-        TextView tv=rootview.findViewById(R.id.textView);
+      //  TextView tv=rootview.findViewById(R.id.textView);
 
         //Log.d(this.getArguments().getString("location"));
      //   tv.setText(resultfromModel);
@@ -158,25 +159,12 @@ chooseImg.setOnClickListener(this);
              title=   title_editText.getText().toString();
 
                 Date currentTime = Calendar.getInstance().getTime();
-final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
+                final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
                     // plastic(imageUri);
-
-                                          //  model_32(imageUri);
-
-
-
-                  //hereeeeeeeeeeeeee
-
-
-
-
-
-
-
-
-
+                     //  model_32(imageUri);
                   //   model_32(imageUri);
+                     if(title.length()>5){
                      reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                          @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -188,21 +176,27 @@ final StorageReference reference=storage.getReference().child("Image").child("us
                                      p1.setGeotag_url(global_uriMap.toString());
                                      p1.setPostedBy("gaurav");
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
-                                     p1.setTitle(title);
+                                     p1.setTitle(title_editText.getText().toString());
+                                     Log.d("check",title_editText.getText().toString());
                                      database.getReference().child("posts")
                                              .push()
                                              .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                  @Override
                                                  public void onSuccess(Void unused) {
                                                      Toast.makeText(getContext(), "posted succesfully", Toast.LENGTH_SHORT).show();
-                                                 }
+                                              }
                                              });
-
                                  }
                              });
                              Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+
+
                          }
+
                      });
+                 }
+                 else
+                         Toast.makeText(getContext(), "Enter title", Toast.LENGTH_SHORT).show();
                  }
                  else
                      Toast.makeText(getContext(), "Please choose image", Toast.LENGTH_SHORT).show();
