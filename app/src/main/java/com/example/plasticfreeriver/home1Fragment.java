@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.icu.util.Output;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import androidx.fragment.app.Fragment;
@@ -34,6 +36,7 @@ import com.example.plasticfreeriver.databinding.FragmentHome1Binding;
 import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -163,7 +166,7 @@ chooseImg.setOnClickListener(this);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
                     // plastic(imageUri);
                      //  model_32(imageUri);
-                  //   model_32(imageUri);
+                     model_32(imageUri);
                      if(title.length()>5){
                      reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                          @Override
@@ -178,7 +181,7 @@ chooseImg.setOnClickListener(this);
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title_editText.getText().toString());
                                      Log.d("check",title_editText.getText().toString());
-                                     database.getReference().child("posts")
+                                     database.getReference().child("posts").child(FirebaseAuth.getInstance().getUid())
                                              .push()
                                              .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                  @Override
@@ -211,7 +214,7 @@ chooseImg.setOnClickListener(this);
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
             im.setImageURI(imageUri);
-           // model_32(uri);
+//            model_32(imageUri);
            //model_16(imageUri);
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(getActivity(), "ImagePicker.getError(data)", Toast.LENGTH_SHORT).show();
@@ -306,69 +309,79 @@ chooseImg.setOnClickListener(this);
 // }
 //
 //
-    void model_32(Uri uri)
-    {
-        String className = "plastic";
-        try {
+//void model_32(Uri uri) {
+//    String className = "plastic";
+//    try {
+//        ModelPlastic model = ModelPlastic.newInstance(getContext());
+//        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+//        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, true);
+//
+//        // Preprocess the image using the same ImageProcessor you've built
+//        TensorImage tensorImage = TensorImage.fromBitmap(resizedBitmap);
+//        ImageProcessor processor = new ImageProcessor.Builder().build();
+//        TensorImage preprocessedImage = processor.process(tensorImage);
+//
+//        // Create a TensorBuffer with the correct shape
+//        TensorBuffer inputFeature = TensorBuffer.createFixedSize(new int[]{1, 1024, 1024, 3}, DataType.FLOAT32);
+//
+//        // Load the preprocessed image data into the TensorBuffer
+////        ByteBuffer byteBuffer = preprocessedImage.getBuffer();
+////        inputFeature.loadBuffer(byteBuffer);
+//
+//        TensorImage newImg = TensorImage.fromBitmap(resizedBitmap);
+//        // Run model inference and get the output
+//        ModelPlastic.Outputs outputs = model.process(inputFeature);
+////        Toast.makeText(getContext(), "jhijk", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), outputs.getOutputAsCategoryList().toString(), Toast.LENGTH_SHORT).show();
+////        List<Category> output = outputs.getOutputAsCategoryList();
+//
+//        // Accessing the first element (index 0) in the output list
+////        Category firstCategory = output.get(0);
+////        String firstClassLabel = firstCategory.getLabel();
+////        float firstConfidenceScore = firstCategory.getScore();
+//
+//        // Releases model resources if no longer used.
+//        model.close();
+//    } catch (IOException e) {
+//        // TODO Handle the exception
+//    }
+//}
 
+
+    void model_32(Uri uri) {
+        try {
             ModelPlastic model = ModelPlastic.newInstance(getContext());
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, false);
+            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, true);
+
+            // Preprocess the image using the same ImageProcessor you've built
+            TensorImage tensorImage = TensorImage.fromBitmap(resizedBitmap);
             ImageProcessor processor = new ImageProcessor.Builder().build();
+            TensorImage preprocessedImage = processor.process(tensorImage);
 
-            //TensorImage anotherTensorImage = processor.process();
-           // resizedBitmap=imageProcessor.process(processor);
-//            TensorBuffer inputfeature=TensorBuffer.createFixedSize(new int[]{1,1024,1024,3},DataType.FLOAT32);
-//            inputfeature.loadBuffer(TensorImage.fromBitmap(resizedBitmap).getBuffer());
-            // Creates inputs for reference.
-            //TensorImage image = TensorImage.fromBitmap(resizedBitmap);
+            // Run model inference and get the output
+            ModelPlastic.Outputs outputs = model.process(preprocessedImage);
 
-            // Runs model inference and gets result.
-            ModelPlastic.Outputs output=model.process(TensorImage.fromBitmap(resizedBitmap));
+            // Access the output tensor
+            TensorBuffer outputTensor = outputs.getOutputAsTensorBuffer();
 
-            //ModelPlastic.Outputs outputs = model.process(inputfeature);
-           // List<Category> output = outputs.getOutputAsCategoryList();
-
-            // Releases model resources if no longer used.
-
-            // Accessing the first element (index 0) in the output list
-//            Category firstCategory = output.get(0);
-//            String firstClassLabel = firstCategory.getLabel();
-//            float firstConfidenceScore = firstCategory.getScore();
-
-
-// Accessing the second element (index 1) in the output list
-//            Category secondCategory = output.get(1);
-//            String secondClassLabel = secondCategory.getLabel();
-//            float secondConfidenceScore = secondCategory.getScore();
-//resultfromModel=firstClassLabel+","+Float.toString(firstConfidenceScore);
+            // Process and display the output tensor
+            StringBuilder resultBuilder = new StringBuilder();
+            int[] shape = outputTensor.getShape();
+            for (int i = 0; i < shape[1]; i++) {
+                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
+                resultBuilder.append("\n");
+            }
 
 
             // Releases model resources if no longer used.
             model.close();
+
+            // Display the result using a Toast message
+//            Toast.makeText(getContext(), resultBuilder.toString(), Toast.LENGTH_LONG).show();
+            Log.i("result", resultBuilder.toString());
         } catch (IOException e) {
             // TODO Handle the exception
-
-
         }
-
     }
-//
-//    private ByteBuffer getInputBuffer(Bitmap inputBitmap) {
-//        int bytesPerChannel = 4; // Assuming float32 input
-//        int inputSize = 1024 * 1024 * 3 * bytesPerChannel; // 1024x1024x3x4
-//        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(inputSize);
-//        inputBuffer.order(ByteOrder.nativeOrder());
-//
-//        // Convert Bitmap to ByteBuffer
-//        int[] pixels = new int[1024 * 1024];
-//        inputBitmap.getPixels(pixels, 0, inputBitmap.getWidth(), 0, 0, inputBitmap.getWidth(), inputBitmap.getHeight());
-//        for (int pixel : pixels) {
-//            inputBuffer.putFloat(((pixel >> 16) & 0xFF) / 255.0f);
-//            inputBuffer.putFloat(((pixel >> 8) & 0xFF) / 255.0f);
-//            inputBuffer.putFloat((pixel & 0xFF) / 255.0f);
-//        }
-//        return inputBuffer;
-//    }
-
 }
