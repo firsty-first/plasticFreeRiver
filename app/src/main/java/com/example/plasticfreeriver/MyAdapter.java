@@ -71,6 +71,7 @@ post model=list.get(position);
                 .placeholder(R.drawable.baseline_downloading_24)
                 .into(holder.binding.postImg);
        holder.binding.title.setText(list.get(position).getTitle());
+       // holder.binding.status.setImageResource(R.drawable.tick);
        holder.binding.postImg.setVisibility(View.VISIBLE);
         String s=list.get(position).getGeotag_url();
        holder.binding.postImg.setOnClickListener(new View.OnClickListener() {

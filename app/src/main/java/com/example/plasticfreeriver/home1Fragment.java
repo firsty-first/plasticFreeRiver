@@ -265,14 +265,31 @@ chooseImg.setOnClickListener(this);
             TensorBuffer outputTensor = outputs.getOutputAsTensorBuffer();
 
             // Process and display the output tensor
+            int count =0;
             StringBuilder resultBuilder = new StringBuilder();
             int[] shape = outputTensor.getShape();
             for (int i = 0; i < shape[1]; i++) {
                 resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
                 resultBuilder.append("\n");
+                float core[]=outputTensor.getFloatArray();
+                for(int x=0;x<core.length/5;x++)
+                {
+
+                    if(core[x]>0.9) {
+                        count++;
+                        Log.d("count",Float.toString(core[x]));
+                    }
+                }
             }
-
-
+//            int count =0;
+//            for (int i = 0; i < shape[1]; i++) {
+//                float[] floatArray = outputTensor.getFloatArray();
+//                if(floatArray[i]>0.5)
+//                    count++;
+//                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
+//
+//            }
+            Log.d("count",Integer.toString(count));
             // Releases model resources if no longer used.
             model.close();
 

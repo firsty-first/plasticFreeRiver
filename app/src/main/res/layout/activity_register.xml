@@ -13,7 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/glass_effect"
         android:elevation="8dp"
-        app:cardBackgroundColor="#95A3FA6C"
+        app:cardBackgroundColor="#1250A820"
         app:cardCornerRadius="10dp"
         app:cardElevation="3dp"
         app:cardUseCompatPadding="true">
