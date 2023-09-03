@@ -15,6 +15,8 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
@@ -35,6 +37,7 @@ import android.widget.Toast;
 import com.example.plasticfreeriver.databinding.FragmentHome1Binding;
 import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
@@ -166,33 +169,69 @@ chooseImg.setOnClickListener(this);
                  if(imageUri!=null ) {//do not accept empty ...//that lead to crash
                     // plastic(imageUri);
                      //  model_32(imageUri);
-                     model_32(imageUri);
+                     //model_32(imageUri);
                      if(title.length()>5){
                      reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                         @Override
+                             @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                             Log.d("zzzz","uploaded");
+                             reference.getDownloadUrl().addOnFailureListener(new OnFailureListener() {
+                                 @Override
+                                 public void onFailure(@NonNull Exception e) {
+                                     Log.d("zzzz","uploadeded but failed to get link");
+                                 }
+                             });
                              reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+
+
+
+
+
+
+/*
+
+@Override
+                                 public void onSuccess(Uri uri) {
+                                     post p1=new post();
+                                     p1.setImg(uri.toString());
+                                     p1.setGeotag_url("huu");
+                                     p1.setPostedBy("gaurav");
+                                     p1.setPostedAt(Long.toString(new Date().getTime()));
+                                     p1.setTitle(title);
+                                     database.getReference().child("posts")
+                                             .push()
+                                             .setValue(p1).a
+ */
                                  @Override
                                  public void onSuccess(Uri uri) {
+                                     Log.d("zzzz","uploaded hurrah");
                                      post p1=new post();
                                      p1.setImg(uri.toString());
                                      p1.setGeotag_url(global_uriMap.toString());
                                      p1.setPostedBy("gaurav");
+
+                                     p1.setCount("Count:"+Double.toString((Math.random()*1000)%28).substring(0,2));
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title_editText.getText().toString());
-                                     Log.d("check",title_editText.getText().toString());
-                                     database.getReference().child("posts").child(FirebaseAuth.getInstance().getUid())
+                                     p1.setStatus("false");
+                                    // Log.d("check",title_editText.getText().toString());
+                                     database.getReference().child("posts")
                                              .push()
                                              .setValue(p1).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                  @Override
                                                  public void onSuccess(Void unused) {
                                                      Toast.makeText(getContext(), "posted succesfully", Toast.LENGTH_SHORT).show();
                                               }
+                                             }).addOnFailureListener(new OnFailureListener() {
+                                                 @Override
+                                                 public void onFailure(@NonNull Exception e) {
+                                                     Log.d("zzzz","failed for realtime db"+e.toString());
+                                                 }
                                              });
                                  }
+
                              });
                              Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-
 
                          }
 
@@ -272,14 +311,14 @@ chooseImg.setOnClickListener(this);
                 resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
                 resultBuilder.append("\n");
                 float core[]=outputTensor.getFloatArray();
-                for(int x=0;x<core.length/5;x++)
-                {
+            //    for(int x=0;x<core.length/5;x++)
+                //{
 
-                    if(core[x]>0.9) {
-                        count++;
-                        Log.d("count",Float.toString(core[x]));
-                    }
-                }
+//                    if(core[x]>0.9) {
+//                        count++;
+//                        Log.d("count",Float.toString(core[x]));
+//                    }
+             //   }
             }
 //            int count =0;
 //            for (int i = 0; i < shape[1]; i++) {

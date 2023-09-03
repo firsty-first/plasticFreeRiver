@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.plasticfreeriver.databinding.RvFeedcardBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.viewHolder>
 {
+    FirebaseAuth auth;
+    public  boolean done;
 Context context;
 ArrayList<post> list;
 
@@ -71,6 +76,7 @@ post model=list.get(position);
                 .placeholder(R.drawable.baseline_downloading_24)
                 .into(holder.binding.postImg);
        holder.binding.title.setText(list.get(position).getTitle());
+       holder.binding.count.setText(list.get(position).getCount());
        // holder.binding.status.setImageResource(R.drawable.tick);
        holder.binding.postImg.setVisibility(View.VISIBLE);
         String s=list.get(position).getGeotag_url();
@@ -93,6 +99,34 @@ post model=list.get(position);
 
            }
        });
+
+        holder.binding.status.setImageResource(R.drawable.tick);
+       holder.binding.status.setOnClickListener(new View.OnClickListener() {
+
+           @Override
+           public void onClick(View view) {
+               FirebaseDatabase.getInstance().getReference().child("posts").child(model.getPostId()).child("status")
+                       .child(FirebaseAuth.getInstance().getUid()).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                           @Override
+                           public void onSuccess(Void unused) {
+                               holder.binding.status.setImageResource(R.drawable.tick);
+                            holder.binding.textStatus.setText("removed");
+//FirebaseDatabase.getInstance().getReference()
+//        .child("posts")
+//        .child(model.getPostId())
+//        .child("status").child("statuscount")
+//        .setValue();
+                           }
+                       });
+//                           public void onSuccess(Void unused) {
+//                               Log.d("status","done");
+//                               holder.binding.status.setImageResource(R.drawable.tick);
+//                               holder.binding.textStatus.setText("removed");
+//                           }
+//                       });
+
+           }
+       });
         //User user=list.get(position);
 
 //        FirebaseDatabase.getInstance().getReference().child("posts")
@@ -110,6 +144,10 @@ post model=list.get(position);
 
 //        holder.binding.title.setText(model.getTitle());
 //        holder.binding.userName.setText(model.getPostedBy());
+    }
+    void checkstatus()
+    {
+
     }
 
     @Override

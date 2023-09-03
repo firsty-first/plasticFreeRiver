@@ -14,10 +14,12 @@ import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,8 +88,19 @@ public class feedFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot dataSnapshot:snapshot.getChildren())
                 {
-                       post p=  dataSnapshot.getValue(post.class);
-                    ar.add(p);
+
+                    try {
+                        post p = dataSnapshot.getValue(post.class);
+                        if (p != null) {
+                            p.setPostId(dataSnapshot.getKey());
+                            ar.add(p);
+                        } else {
+                            // Handle the case where data couldn't be converted to the post class
+                        }
+                    } catch (DatabaseException e) {
+                        // Handle database-related exceptions (e.g., data structure mismatch)
+                        e.printStackTrace();
+                    }
                 }
                 postadapter.notifyDataSetChanged();
             }

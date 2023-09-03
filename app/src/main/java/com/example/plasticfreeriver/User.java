@@ -1,7 +1,9 @@
 package com.example.plasticfreeriver;
 
 public class User {
-    String userId,name, profileImg;
+    String userId, profileImg;
+    String name;
+
     User()
     {
 

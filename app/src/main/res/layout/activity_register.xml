@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:elegantTextHeight="true"
-                android:hint="Username"
+                android:hint="email id"
                 android:inputType="text" />
 
             <EditText

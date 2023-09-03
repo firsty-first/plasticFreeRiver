@@ -69,10 +69,9 @@ public class loginActivity extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(emailid_string,pswd_string).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
+
                         btnlogin.setText("Logged in");
-                        ImageView logo=findViewById(R.id.logo);
-                        Drawable drawable = getResources().getDrawable(R.drawable.tick);
-                        logo.setImageDrawable(drawable);
+
                         card.setCardBackgroundColor(getResources().getColor(R.color.green));
                         startActivity(new Intent(loginActivity.this, MainActivity.class));
                         finish();
@@ -107,7 +106,22 @@ public class loginActivity extends AppCompatActivity {
     public void onStart() {
 
         super.onStart();
-       // FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
+
+        mAuth = FirebaseAuth.getInstance();
+
+// Check if user is signed in when the app starts
+        mAuth.addAuthStateListener(firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Intent i=new Intent(getApplicationContext(),MainActivity.class);
+                startActivity(i);
+                finish();
+            } else {
+                // User is signed out
+            }
+        });
+
+
     }
 }

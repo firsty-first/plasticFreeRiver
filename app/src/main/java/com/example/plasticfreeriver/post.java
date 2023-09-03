@@ -8,6 +8,16 @@ public class post {
     private String postedAt;
     private String status;
     private String geotag_url;
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
+
+    private  String count;
     public post()
     {
 

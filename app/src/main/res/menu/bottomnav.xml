@@ -12,6 +12,6 @@
         android:title="feed" />
     <item
         android:id="@+id/insight"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/sagaricon"
         android:title="insight"/>
 </menu>

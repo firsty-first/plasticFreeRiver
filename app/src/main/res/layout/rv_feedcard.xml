@@ -118,41 +118,19 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_margin="1dp"
-                        app:cardCornerRadius="500dp">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="#CCA1AEBC"
-                            android:padding="8dp">
-
-                            <ImageView
-                                android:id="@+id/likeIcon"
-
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/baseline_thumb_up_alt_24" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                        app:cardCornerRadius="500dp"/>
 
                     <TextView
+                        android:id="@+id/count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Like"
-                        android:textColor="@color/black"
-                        android:textSize="13sp" />
+                        android:autoSizeTextType="uniform"
+                        android:text="count : 16"
+                        android:textColor="#B33504"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/totalLikes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="105"
-                    android:textColor="@color/white" />
 
             </LinearLayout>
 
@@ -188,6 +166,7 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/textStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Done"
