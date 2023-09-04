@@ -213,7 +213,7 @@ chooseImg.setOnClickListener(this);
                                      p1.setCount("Count:"+Double.toString((Math.random()*1000)%28).substring(0,2));
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title_editText.getText().toString());
-                                     p1.setStatus("false");
+
                                     // Log.d("check",title_editText.getText().toString());
                                      database.getReference().child("posts")
                                              .push()

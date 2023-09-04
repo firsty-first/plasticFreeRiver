@@ -1,6 +1,6 @@
 package com.example.plasticfreeriver;
 
-public class post {
+public class postWithoutstatus {
     private String postId;
     private String img;
     private String postedBy;
@@ -8,15 +8,6 @@ public class post {
     private String postedAt;
 
     private String geotag_url;
-    private  boolean status;
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
 
     public String getCount() {
         return count;
@@ -27,12 +18,12 @@ public class post {
     }
 
     private  String count;
-    public post()
-    {
 
-    }
+public  postWithoutstatus()
+{
 
-    public post(String postId, String img, String postedBy, String title, String postedAt, String geotag_url) {
+}
+    public postWithoutstatus(String postId, String img, String postedBy, String title, String postedAt, String status, String geotag_url) {
         this.postId = postId;
         this.img = img;
         this.postedBy = postedBy;
@@ -83,7 +74,6 @@ public class post {
     }
 
 
-
     public String getGeotag_url() {
         return geotag_url;
     }
@@ -92,3 +82,4 @@ public class post {
         this.geotag_url = geotag_url;
     }
 }
+

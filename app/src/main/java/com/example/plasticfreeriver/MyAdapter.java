@@ -2,10 +2,7 @@ package com.example.plasticfreeriver;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +16,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.plasticfreeriver.databinding.RvFeedcardBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.viewHolder>
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.viewHolder1>
 {
     FirebaseAuth auth;
     public  boolean done;
 Context context;
 ArrayList<post> list;
+
+    public MyAdapter(Context context, ArrayList<post> list, ArrayList<postWithoutstatus> withoutstatusArrayList) {
+        this.context = context;
+        this.list = list;
+        this.withoutstatusArrayList = withoutstatusArrayList;
+    }
+
+    ArrayList<postWithoutstatus> withoutstatusArrayList;
 
     public MyAdapter(Context context, ArrayList<post> list) {
         this.context = context;
@@ -42,9 +44,9 @@ ArrayList<post> list;
 
     @NonNull
     @Override
-    public MyAdapter.viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public viewHolder1 onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
        View view= LayoutInflater.from(context).inflate(R.layout.rv_feedcard,parent,false);
-       return new viewHolder(view);
+       return new viewHolder1(view);
 
 
     }
@@ -70,7 +72,7 @@ ArrayList<post> list;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyAdapter.viewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull viewHolder1 holder, int position) {
 post model=list.get(position);
         Picasso.get().load(model.getImg())
                 .placeholder(R.drawable.baseline_downloading_24)
@@ -88,28 +90,21 @@ post model=list.get(position);
 
            }
        });
-       holder.binding.status.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
 
-               Toast.makeText(context, "woah", Toast.LENGTH_SHORT).show();
-// Retrieve the drawable resource using the resource identifier
-               //holder.binding.status.setImageDrawable(Resources.getSystem().getDrawable(R.drawable.tick));
+if(model.isStatus())
+{
+    holder.binding.status.setImageResource(R.drawable.done);
+    holder.binding.textStatus.setText("removed");
+}
 
-
-           }
-       });
-
-        holder.binding.status.setImageResource(R.drawable.tick);
        holder.binding.status.setOnClickListener(new View.OnClickListener() {
 
            @Override
            public void onClick(View view) {
-               FirebaseDatabase.getInstance().getReference().child("posts").child(model.getPostId()).child("status")
-                       .child(FirebaseAuth.getInstance().getUid()).setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+               FirebaseDatabase.getInstance().getReference().child("posts").child(model.getPostId()).child("title").setValue("This has been done").addOnSuccessListener(new OnSuccessListener<Void>() {
                            @Override
                            public void onSuccess(Void unused) {
-                               holder.binding.status.setImageResource(R.drawable.tick);
+                           holder.binding.status.setImageResource(R.drawable.done);
                             holder.binding.textStatus.setText("removed");
 //FirebaseDatabase.getInstance().getReference()
 //        .child("posts")
@@ -154,12 +149,12 @@ post model=list.get(position);
     public int getItemCount() {
         return list.size();
     }
-    public class viewHolder extends RecyclerView.ViewHolder
+    public class viewHolder1 extends RecyclerView.ViewHolder
     {
 RvFeedcardBinding binding;
 TextView title;
 ImageView imgDisp;
-        public viewHolder(@NonNull View itemView) {
+        public viewHolder1(@NonNull View itemView) {
             super(itemView);
             binding=RvFeedcardBinding.bind(itemView);
             itemView.findViewById(R.id.title);

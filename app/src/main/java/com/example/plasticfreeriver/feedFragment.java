@@ -37,6 +37,7 @@ public class feedFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     ArrayList<post> ar;
+    ArrayList<postWithoutstatus> arWithoutstatus;
     RecyclerView recyclerView;
     FirebaseDatabase database;
 
@@ -78,7 +79,7 @@ public class feedFragment extends Fragment {
         database=FirebaseDatabase.getInstance();
         ar=new ArrayList<>();
         recyclerView=view.findViewById(R.id.rv_feed);
-        MyAdapter postadapter=new MyAdapter(getContext(), ar);
+        MyAdapter postadapter=new MyAdapter(getContext(), ar,arWithoutstatus);
         LinearLayoutManager layoutManager=new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(postadapter);
@@ -89,22 +90,26 @@ public class feedFragment extends Fragment {
                 for(DataSnapshot dataSnapshot:snapshot.getChildren())
                 {
 
+
                     try {
                         post p = dataSnapshot.getValue(post.class);
-                        if (p != null) {
+
+                         if (p != null && dataSnapshot.getChildrenCount()>3 ) {
                             p.setPostId(dataSnapshot.getKey());
+if(p.getTitle().equals("This has been done"))
+    p.setStatus(true);
                             ar.add(p);
                         } else {
                             // Handle the case where data couldn't be converted to the post class
                         }
-                    } catch (DatabaseException e) {
-                        // Handle database-related exceptions (e.g., data structure mismatch)
+                    }
+                    catch (DatabaseException e) {
+                            // Handle database-related exceptions (e.g., data structure mismatch)
                         e.printStackTrace();
                     }
                 }
                 postadapter.notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
