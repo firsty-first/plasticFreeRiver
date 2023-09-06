@@ -1,17 +1,21 @@
 package com.example.plasticfreeriver;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.icu.util.Output;
+import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import okhttp3.OkHttpClient;
+import retrofit2.Callback;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,7 +32,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.example.plasticfreeriver.ml.BestFloat16;
@@ -39,25 +42,26 @@ import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.tensorflow.lite.schema.ResizeBilinearOptions;
-import org.tensorflow.lite.support.common.ops.NormalizeOp;
 import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.image.ops.Rot90Op;
-import org.tensorflow.lite.support.label.Category;
 
 import java.io.IOException;
-import java.util.List;
-import org.tensorflow.lite.DataType;
+import java.util.concurrent.TimeUnit;
+
 import org.tensorflow.lite.support.image.ImageProcessor;
-import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.image.ops.ResizeOp;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,11 +77,14 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
 
     // TODO: Rename and change types of parameters
     private String mParam1;
+    String imgUri;
     private String mParam2;
     EditText title_editText;
     Button submit_post,chooseImg;
     String title;
     ImageView im;
+    private final String baseUrl = "https://plasticapi.onrender.com";
+    private ApiService apiService;
     public String location;
     FirebaseStorage storage;
     FirebaseDatabase database;
@@ -85,7 +92,7 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     ImageProcessor imageProcessor;
 String resultfromModel;
 View img;
-Uri global_uriMap,imageUri;
+Uri global_uriMap, imageuri;
 
     public home1Fragment() {
         // Required empty public constructor
@@ -114,8 +121,77 @@ Uri global_uriMap,imageUri;
         location = getSavedStringFromSharedPreferences();
         storage=FirebaseStorage.getInstance();
         database=FirebaseDatabase.getInstance();
-    }
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        apiService = retrofit.create(ApiService.class);
+        }
+void IcanDoIt()
+{
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .build();
 
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+apiService=retrofit.create(ApiService.class);
+    // Example usage to get the welcome message
+    Call<PredictionResponse> welcomeMessageCall = apiService.getWelcomeMessage();
+    welcomeMessageCall.enqueue(new Callback<PredictionResponse>() {
+        @Override
+        public void onResponse(Call<PredictionResponse> call, Response<PredictionResponse> response) {
+            if (response.isSuccessful()) {
+                String welcomeMessage = response.body().getMessage();
+                // Handle the welcome message as needed
+                Log.d("result",welcomeMessage);
+            }
+            else
+            {
+
+                 }
+        }
+
+        @Override
+        public void onFailure(Call<PredictionResponse> call, Throwable t) {
+            t.printStackTrace();
+            // Handle failure
+        }
+
+    });
+
+    // Example usage to get the prediction
+    String imgUrl = "https://firebasestorage.googleapis.com/v0/b/sagar-b4f59.appspot.com/o/Image%2FusernameMon%20Sep%2004%2019%3A54%3A44%20GMT%2B05%3A30%202023?alt=media&token=d4176501-2e1e-47be-a4b3-9a9b753a4519";
+    ModelInput input = new ModelInput(imgUrl);
+    Call<PredictionResponse> predictionCall = apiService.getPrediction(input);
+
+    predictionCall.enqueue(new Callback<PredictionResponse>() {
+        @Override
+        public void onResponse(Call<PredictionResponse> call, Response<PredictionResponse> response) {
+            if (response.isSuccessful()) {
+                String predictionMessage = response.body().getMessage();
+                Log.d("result",predictionMessage);
+                // Handle the prediction message as needed
+            } else {
+                // Handle error
+                Log.d("result","bruuuuuuuuuuuhhhhh fkd ");
+            }
+        }
+
+        @Override
+        public void onFailure(Call<PredictionResponse> call, Throwable t) {
+            t.printStackTrace();
+            // Handle failure
+        }
+    });
+
+
+}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -124,9 +200,11 @@ Uri global_uriMap,imageUri;
 View rootview=inflater.inflate(R.layout.fragment_home1, container, false);
  chooseImg=rootview.findViewById(R.id.chooseImg);
  submit_post=rootview.findViewById(R.id.btn_post);
+ Button button=rootview.findViewById(R.id.test);
         img=rootview.findViewById(R.id.imageView);
         View locate=rootview.findViewById(R.id.locate);
         title_editText=(EditText)rootview.findViewById(R.id.editTextTitle);
+        button.setOnClickListener(this);
 submit_post.setOnClickListener(this);
 
 locate.setOnClickListener(this);
@@ -159,6 +237,10 @@ chooseImg.setOnClickListener(this);
             {
               openMap(global_uriMap);
             }
+        if(view.getId()==R.id.test)
+        {
+           IcanDoIt();
+        }
             if (view.getId()==R.id.btn_post)
             {
 
@@ -166,12 +248,12 @@ chooseImg.setOnClickListener(this);
 
                 Date currentTime = Calendar.getInstance().getTime();
                 final StorageReference reference=storage.getReference().child("Image").child("username"+currentTime);
-                 if(imageUri!=null ) {//do not accept empty ...//that lead to crash
+                 if(imageuri !=null ) {//do not accept empty ...//that lead to crash
                     // plastic(imageUri);
                      //  model_32(imageUri);
                      //model_32(imageUri);
                      if(title.length()>5){
-                     reference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                     reference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                              @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                              Log.d("zzzz","uploaded");
@@ -204,6 +286,7 @@ chooseImg.setOnClickListener(this);
  */
                                  @Override
                                  public void onSuccess(Uri uri) {
+
                                      Log.d("zzzz","uploaded hurrah");
                                      post p1=new post();
                                      p1.setImg(uri.toString());
@@ -249,10 +332,10 @@ chooseImg.setOnClickListener(this);
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             // Image Uri will not be null for RESULT_OK
-            imageUri = data.getData();
+            imageuri = data.getData();
             // Use Uri object instead of File to avoid storage permissions
             ImageView im=getView().findViewById(R.id.imageView);
-            im.setImageURI(imageUri);
+            im.setImageURI(imageuri);
 //            model_32(imageUri);
            //model_16(imageUri);
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
@@ -328,7 +411,7 @@ chooseImg.setOnClickListener(this);
 //                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
 //
 //            }
-            Log.d("count",Integer.toString(count));
+           // Log.d("count",Integer.toString(count));
             // Releases model resources if no longer used.
             model.close();
 
@@ -337,6 +420,25 @@ chooseImg.setOnClickListener(this);
             Log.i("result", resultBuilder.toString());
         } catch (IOException e) {
             // TODO Handle the exception
+        }
+    }
+    public static void extractLatLongFromImage(Context context, Uri imageUri) {
+        try {
+            ExifInterface exifInterface = new ExifInterface(context.getContentResolver().openInputStream(imageUri));
+
+            float[] latLong = new float[2];
+            if (exifInterface.getLatLong(latLong)) {
+                float latitude = latLong[0];
+                float longitude = latLong[1];
+
+                Log.d("ImageExifExtractor", "Latitude: " + latitude);
+                Log.d("ImageExifExtractor", "Longitude: " + longitude);
+            } else {
+                Log.d("ImageExifExtractor", "No Latitude and Longitude found in EXIF.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("ImageExifExtractor", "Error extracting EXIF data from image.");
         }
     }
 }

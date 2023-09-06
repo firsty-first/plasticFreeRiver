@@ -94,11 +94,11 @@ public class feedFragment extends Fragment {
                     try {
                         post p = dataSnapshot.getValue(post.class);
 
-                         if (p != null && dataSnapshot.getChildrenCount()>3 ) {
+                         if (p != null && dataSnapshot.getChildrenCount()>3 && p.getTitle().equals("This has been done") ) {
                             p.setPostId(dataSnapshot.getKey());
 if(p.getTitle().equals("This has been done"))
     p.setStatus(true);
-                            ar.add(p);
+                     ar.add(p);
                         } else {
                             // Handle the case where data couldn't be converted to the post class
                         }
