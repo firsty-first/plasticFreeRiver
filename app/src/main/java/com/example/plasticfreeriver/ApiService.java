@@ -9,4 +9,8 @@ public interface ApiService {
     Call<PredictionResponse> getWelcomeMessage();
     @POST("/prediction")
     Call<PredictionResponse> getPrediction(@Body ModelInput input);
+
+    @POST("/prediction")
+    Call<String> getPredictionString(@Body ModelInput input);
+
 }

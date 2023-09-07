@@ -170,28 +170,80 @@ apiService=retrofit.create(ApiService.class);
     ModelInput input = new ModelInput(imgUrl);
     Call<PredictionResponse> predictionCall = apiService.getPrediction(input);
 
+    //
     predictionCall.enqueue(new Callback<PredictionResponse>() {
         @Override
         public void onResponse(Call<PredictionResponse> call, Response<PredictionResponse> response) {
+            Log.d("result","minii success");
             if (response.isSuccessful()) {
-                String predictionMessage = response.body().getMessage();
-                Log.d("result",predictionMessage);
-                // Handle the prediction message as needed
-            } else {
-                // Handle error
-                Log.d("result","bruuuuuuuuuuuhhhhh fkd ");
+                Log.d("success ","seee");
+                response.body();
+                //String predictionMessage = response.body().getMessage();
+                Log.d("result",response.body().toString());
+
             }
         }
 
         @Override
         public void onFailure(Call<PredictionResponse> call, Throwable t) {
             t.printStackTrace();
+            Log.d("result",t.toString());
             // Handle failure
         }
     });
 
 
 }
+
+void godpleaseHelp()
+{
+    OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(300, TimeUnit.SECONDS)
+            .readTimeout(300, TimeUnit.SECONDS)
+            .writeTimeout(300, TimeUnit.SECONDS)
+            .build();
+
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+
+    // Create an instance of your Retrofit service
+    ApiService apiService = retrofit.create(ApiService.class);
+
+// Create a ModelInput object with the necessary data
+    ModelInput input = new ModelInput("https://firebasestorage.googleapis.com/v0/b/sagar-b4f59.appspot.com/o/Image%2FusernameMon%20Sep%2004%2019%3A54%3A44%20GMT%2B05%3A30%202023?alt=media&token=d4176501-2e1e-47be-a4b3-9a9b753a4519");
+    //input.setImgUrl("https://example.com/image.jpg"); // Replace with your image URL
+
+// Make the API call
+    Call<String> call = apiService.getPredictionString(input);
+    call.enqueue(new Callback<String>() {
+        @Override
+        public void onResponse(Call<String> call, Response<String> response) {
+            if (response.isSuccessful()) {
+                // Handle the string response here
+                String prediction = response.body();
+
+                // Example: Display the prediction in a TextView
+             Log.d("god",prediction);
+            } else {
+                // Handle error responses
+                // Example: Display an error message
+
+            }
+        }
+
+        @Override
+        public void onFailure(Call<String> call, Throwable t) {
+            // Handle network or other errors
+            // Example: Display a network error message
+           Log.d("Network Error: " , t.getMessage());
+        }
+    });
+
+}
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -239,7 +291,8 @@ chooseImg.setOnClickListener(this);
             }
         if(view.getId()==R.id.test)
         {
-           IcanDoIt();
+            godpleaseHelp();
+          // IcanDoIt();
         }
             if (view.getId()==R.id.btn_post)
             {
