@@ -102,6 +102,7 @@ if(model.isStatus())
            @Override
            public void onClick(View view) {
                FirebaseDatabase.getInstance().getReference().child("posts").child(model.getPostId()).child("title").setValue("This has been done").addOnSuccessListener(new OnSuccessListener<Void>() {
+
                            @Override
                            public void onSuccess(Void unused) {
                            holder.binding.status.setImageResource(R.drawable.done);
@@ -122,6 +123,7 @@ if(model.isStatus())
 
            }
        });
+
         //User user=list.get(position);
 
 //        FirebaseDatabase.getInstance().getReference().child("posts")

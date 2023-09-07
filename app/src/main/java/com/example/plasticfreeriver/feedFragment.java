@@ -1,5 +1,6 @@
 package com.example.plasticfreeriver;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,8 @@ public class feedFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    ArrayList<Integer> arRegistered,arCleaned;
+    int arRegTotal,arCleanedTotal;
     ArrayList<post> ar;
     ArrayList<postWithoutstatus> arWithoutstatus;
     RecyclerView recyclerView;
@@ -70,6 +73,8 @@ public class feedFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        arRegistered=new ArrayList<>();
+        arCleaned=new ArrayList<>();
     }
 
     @Override
@@ -85,9 +90,12 @@ public class feedFragment extends Fragment {
         recyclerView.setAdapter(postadapter);
 
         database.getReference().child("posts").addValueEventListener(new ValueEventListener() {
+            @SuppressLint("SuspiciousIndentation")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                ar.clear();
+                arRegistered.clear();
+                arCleaned.clear();
                 for(DataSnapshot dataSnapshot:snapshot.getChildren())
                 {
 
@@ -97,10 +105,20 @@ public class feedFragment extends Fragment {
 
                          if (p != null && dataSnapshot.getChildrenCount()>3  ) {
                             p.setPostId(dataSnapshot.getKey());
-if(p.getTitle().equals("This has been done"))
+                             //int l=p.getCount().length();
+if(p.getTitle().equals("This has been done")) {
     p.setStatus(true);
+
+    arCleaned.add(Integer.parseInt(p.getCount()));
+}
                      ar.add(p);
-                        } else {
+
+                                 arRegistered.add(Integer.parseInt(p.getCount()));
+
+
+
+
+                         } else {
                             // Handle the case where data couldn't be converted to the post class
                         }
                     }
@@ -108,14 +126,29 @@ if(p.getTitle().equals("This has been done"))
                             // Handle database-related exceptions (e.g., data structure mismatch)
                         e.printStackTrace();
                     }
+                    for(int i:arRegistered)
+                        arRegTotal+=i;
+                    for(int j:arCleaned)
+                        arCleanedTotal+=j;
+
+
                 }
+
                 postadapter.notifyDataSetChanged();
+                database.getReference().child("plastic").child("totalReg").setValue(arRegTotal);
+                database.getReference().child("plastic").child("totalCleaned").setValue(arCleanedTotal);
+
+//                for(int i:arRegistered)
+//                    arRegTotal+=i;
+//                for(int j:arCleaned)
+//                    arCleanedTotal+=j;
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         });
-        return view;
+         return view;
     }
 }

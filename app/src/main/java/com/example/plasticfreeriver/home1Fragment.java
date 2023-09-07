@@ -397,9 +397,11 @@ chooseImg.setOnClickListener(this);
                                         {
                                             Log.d("checking count /result ","null");
                                             result=Double.toString((Math.random()*1000)%28).substring(0,2);
+                                            if(result.endsWith("."))
+                                                result=result.substring(0,result.length()-1);
                                         }
 
-                                     p1.setCount("Count:"+result);//Double.toString((Math.random()*1000)%28).substring(0,2)
+                                     p1.setCount(result);//Double.toString((Math.random()*1000)%28).substring(0,2)
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title_editText.getText().toString());
 

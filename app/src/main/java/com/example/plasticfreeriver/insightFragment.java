@@ -1,9 +1,9 @@
 package com.example.plasticfreeriver;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.text.SpannableString;
@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.example.plasticfreeriver.databinding.FragmentInsightBinding;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
@@ -26,8 +25,11 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-
-import org.checkerframework.checker.units.qual.A;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -41,9 +43,13 @@ public class insightFragment extends Fragment {
 
     // variable for our bar data.
     BarData barData;
+    public int arRegTotal,arCleanedTotal;
+    ArrayList<Integer> arRegistered,arCleaned;
+
 
     // variable for our bar data set.
     BarDataSet barDataSet;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     // array list for storing entries.
     ArrayList barEntriesArrayList,pieList,pieList2;
@@ -77,6 +83,8 @@ public class insightFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+arRegistered=new ArrayList<>();
+        arCleaned=new ArrayList<>();
     }
 
     @Override
@@ -95,7 +103,7 @@ public class insightFragment extends Fragment {
 //        chart.setCenterTextTypeface(tf);
 
         // radius of the center hole in percent of maximum radius
-        chart.setHoleRadius(45f);
+        chart.setHoleRadius(40f);
         chart.setTransparentCircleRadius(50f);
 
         Legend l = chart.getLegend();
@@ -106,8 +114,11 @@ public class insightFragment extends Fragment {
        ArrayList<PieEntry> pieList=new ArrayList<>();
        ArrayList<PieEntry> pieList2=new ArrayList<>();
 
-        pieList2.add(0,new PieEntry(2));
+
+        pieList2.add(0,new PieEntry(25));
+        pieList2.add(1,new PieEntry(6));
         pieList.add(new PieEntry(1,5));
+        pieList.add(new PieEntry(0,85));
         IPieDataSet iPieDataSet=new PieDataSet(pieList,"cleaned");
         IPieDataSet iPieDataSet2=new PieDataSet(pieList2,"remaining plastic");
 
@@ -143,6 +154,7 @@ public class insightFragment extends Fragment {
     }
 
     private void getBarEntries() {
+
         // creating a new array list
         barEntriesArrayList = new ArrayList<>();
 
