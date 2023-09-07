@@ -233,20 +233,7 @@ apiService=retrofit.create(ApiService.class);
 {
     Log.d("check","got into godplzhelp");
     Log.d("here is the uri",imgUri);
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .build();
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-    // Create an instance of your Retrofit service
-    ApiService apiService = retrofit.create(ApiService.class);
 
 // Create a ModelInput object with the necessary data
     Log.d("uriiiiiiii chek mid",imgUri);

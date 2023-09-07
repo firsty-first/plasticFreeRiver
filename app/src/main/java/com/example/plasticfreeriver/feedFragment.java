@@ -87,6 +87,7 @@ public class feedFragment extends Fragment {
         database.getReference().child("posts").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+               ar.clear();
                 for(DataSnapshot dataSnapshot:snapshot.getChildren())
                 {
 
@@ -94,7 +95,7 @@ public class feedFragment extends Fragment {
                     try {
                         post p = dataSnapshot.getValue(post.class);
 
-                         if (p != null && dataSnapshot.getChildrenCount()>3 && p.getTitle().equals("This has been done") ) {
+                         if (p != null && dataSnapshot.getChildrenCount()>3  ) {
                             p.setPostId(dataSnapshot.getKey());
 if(p.getTitle().equals("This has been done"))
     p.setStatus(true);
