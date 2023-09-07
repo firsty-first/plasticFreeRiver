@@ -101,7 +101,8 @@
                 android:id="@+id/test"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:backgroundTint="#1FA57F"
+                android:text="check api health" />
 
         </LinearLayout>
     </ScrollView>

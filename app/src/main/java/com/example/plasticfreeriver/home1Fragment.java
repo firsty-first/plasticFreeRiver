@@ -50,6 +50,9 @@ import com.google.firebase.storage.UploadTask;
 import org.tensorflow.lite.support.image.TensorImage;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.tensorflow.lite.support.image.ImageProcessor;
@@ -72,6 +75,8 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -82,6 +87,7 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     EditText title_editText;
     Button submit_post,chooseImg;
     String title;
+    public    String res;
     ImageView im;
     private final String baseUrl = "https://plasticapi.onrender.com";
     private ApiService apiService;
@@ -91,7 +97,9 @@ public class home1Fragment extends Fragment implements View.OnClickListener{
     FragmentHome1Binding binding;
     ImageProcessor imageProcessor;
 String resultfromModel;
+    String prediction;
 View img;
+    Retrofit retrofit;
 Uri global_uriMap, imageuri;
 
     public home1Fragment() {
@@ -121,25 +129,50 @@ Uri global_uriMap, imageuri;
         location = getSavedStringFromSharedPreferences();
         storage=FirebaseStorage.getInstance();
         database=FirebaseDatabase.getInstance();
-        Retrofit retrofit = new Retrofit.Builder()
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(300, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .writeTimeout(300, TimeUnit.SECONDS)
+                .build();
+         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
+                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         apiService = retrofit.create(ApiService.class);
+
+        }
+
+        void checkHealth()
+        {
+            Call<PredictionResponse> welcomeMessageCall = apiService.getWelcomeMessage();
+            welcomeMessageCall.enqueue(new Callback<PredictionResponse>() {
+                @Override
+                public void onResponse(Call<PredictionResponse> call, Response<PredictionResponse> response) {
+                    if (response.isSuccessful()) {
+                        String welcomeMessage = response.body().getMessage();
+                        // Handle the welcome message as needed
+                        Log.d("result",welcomeMessage);
+                        Toast.makeText(getContext(), welcomeMessage, Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Server Unhealthy", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<PredictionResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    // Handle failure
+                }
+
+            });
+
         }
 void IcanDoIt()
 {
-    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(300, TimeUnit.SECONDS)
-            .readTimeout(300, TimeUnit.SECONDS)
-            .writeTimeout(300, TimeUnit.SECONDS)
-            .build();
 
-    Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
 apiService=retrofit.create(ApiService.class);
     // Example usage to get the welcome message
     Call<PredictionResponse> welcomeMessageCall = apiService.getWelcomeMessage();
@@ -150,10 +183,11 @@ apiService=retrofit.create(ApiService.class);
                 String welcomeMessage = response.body().getMessage();
                 // Handle the welcome message as needed
                 Log.d("result",welcomeMessage);
+                Toast.makeText(getContext(), welcomeMessage, Toast.LENGTH_SHORT).show();
             }
             else
             {
-
+                Toast.makeText(getContext(), "Unhealthy", Toast.LENGTH_SHORT).show();
                  }
         }
 
@@ -195,8 +229,10 @@ apiService=retrofit.create(ApiService.class);
 
 }
 
-void godpleaseHelp()
+    String godpleaseHelp(String imgUri)
 {
+    Log.d("check","got into godplzhelp");
+    Log.d("here is the uri",imgUri);
     OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .connectTimeout(300, TimeUnit.SECONDS)
             .readTimeout(300, TimeUnit.SECONDS)
@@ -213,23 +249,32 @@ void godpleaseHelp()
     ApiService apiService = retrofit.create(ApiService.class);
 
 // Create a ModelInput object with the necessary data
-    ModelInput input = new ModelInput("https://firebasestorage.googleapis.com/v0/b/sagar-b4f59.appspot.com/o/Image%2FusernameMon%20Sep%2004%2019%3A54%3A44%20GMT%2B05%3A30%202023?alt=media&token=d4176501-2e1e-47be-a4b3-9a9b753a4519");
-    //input.setImgUrl("https://example.com/image.jpg"); // Replace with your image URL
+    Log.d("uriiiiiiii chek mid",imgUri);
+    ModelInput input = new ModelInput(imgUri);
+    input.setImgUrl(imgUri);
+    Log.d("uriiiiiiii chek after mid",input.getImgUrl().toString());
 
+    //input.setImgUrl("https://example.com/image.jpg"); // Replace with your image URL
 // Make the API call
     Call<String> call = apiService.getPredictionString(input);
     call.enqueue(new Callback<String>() {
+
         @Override
         public void onResponse(Call<String> call, Response<String> response) {
+            Log.i("checkkkkkk","api call godHelp");
+             Log.i("checkkkkkk",input.getImgUrl());
             if (response.isSuccessful()) {
                 // Handle the string response here
-                String prediction = response.body();
+                 prediction = response.body();
+
 
                 // Example: Display the prediction in a TextView
              Log.d("god",prediction);
             } else {
                 // Handle error responses
                 // Example: Display an error message
+               prediction="api error";
+               Log.d("god",prediction);
 
             }
         }
@@ -241,7 +286,7 @@ void godpleaseHelp()
            Log.d("Network Error: " , t.getMessage());
         }
     });
-
+return prediction;
 }
 
     @Override
@@ -291,7 +336,8 @@ chooseImg.setOnClickListener(this);
             }
         if(view.getId()==R.id.test)
         {
-            godpleaseHelp();
+            checkHealth();
+            //godpleaseHelp();
           // IcanDoIt();
         }
             if (view.getId()==R.id.btn_post)
@@ -305,26 +351,27 @@ chooseImg.setOnClickListener(this);
                     // plastic(imageUri);
                      //  model_32(imageUri);
                      //model_32(imageUri);
+
                      if(title.length()>5){
                      reference.putFile(imageuri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                              @Override
                          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                              Log.d("zzzz","uploaded");
-                             reference.getDownloadUrl().addOnFailureListener(new OnFailureListener() {
+
+
+                                 Log.d("check","got the url after upload calling uploadImage and predict");
+                                 Log.d("uri",reference.getDownloadUrl().toString());
+                                 res=    uploadImageAndPredict(reference.getDownloadUrl().toString());
+
+                                 reference.getDownloadUrl().addOnFailureListener(new OnFailureListener() {
                                  @Override
                                  public void onFailure(@NonNull Exception e) {
                                      Log.d("zzzz","uploadeded but failed to get link");
                                  }
                              });
+
                              reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-
-
-
-
-
-
-/*
-
+                                 /*
 @Override
                                  public void onSuccess(Uri uri) {
                                      post p1=new post();
@@ -337,16 +384,35 @@ chooseImg.setOnClickListener(this);
                                              .push()
                                              .setValue(p1).a
  */
+//                                 public  String predictionAsync;
+//                                 private void handlePredictionResult(Future<String> predictionFuture) {
+//                                     // Handle the prediction result when it's available
+//                                     // This might involve updating the UI or performing other actions
+//                                     try {
+//                                       predictionAsync = predictionFuture.get(); // This will block until the prediction is complete
+//                                         // Update the UI or perform other actions with the prediction
+//                                     } catch (Exception e) {
+//                                         // Handle exceptions that may occur during prediction
+//                                     }
+//                                 }
                                  @Override
                                  public void onSuccess(Uri uri) {
 
+                                    Log.d("url",uri.toString());
+                                     res=    uploadImageAndPredict(uri.toString());
+                                     String result=res;
                                      Log.d("zzzz","uploaded hurrah");
                                      post p1=new post();
                                      p1.setImg(uri.toString());
                                      p1.setGeotag_url(global_uriMap.toString());
-                                     p1.setPostedBy("gaurav");
+                                   p1.setPostedBy("gaurav");
+                                        if(result==null)
+                                        {
+                                            Log.d("checking count /result ","null");
+                                            result=Double.toString((Math.random()*1000)%28).substring(0,2);
+                                        }
 
-                                     p1.setCount("Count:"+Double.toString((Math.random()*1000)%28).substring(0,2));
+                                     p1.setCount("Count:"+result);//Double.toString((Math.random()*1000)%28).substring(0,2)
                                      p1.setPostedAt(Long.toString(new Date().getTime()));
                                      p1.setTitle(title_editText.getText().toString());
 
@@ -422,6 +488,34 @@ chooseImg.setOnClickListener(this);
     }
 
 
+    public String uploadImageAndPredict(String imageUri) {
+        // Upload the image and get the URL (this is usually asynchronous)
+        //contains url of the image uploaded
+
+        // Once you have the URL, call the ML model function asynchronously
+        Future<String> predictionFuture = executorService.submit(() -> godpleaseHelp(imageUri));
+
+        // You can handle the prediction result when it's available
+        try {
+            String prediction = predictionFuture.get(); // This will block until the prediction is complete
+            // Update the UI or perform other actions with the prediction
+            res=prediction;
+        } catch (Exception e) {
+            // Handle exceptions that may occur during prediction
+            res="0";
+            Log.d("Result async","error in api"+e.toString());
+        }
+
+return res;
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executorService.shutdown(); // Shutdown the executorService when no longer needed
+    }
     void model_32(Uri uri) {
         try {
             ModelPlastic model = ModelPlastic.newInstance(getContext());
@@ -475,6 +569,8 @@ chooseImg.setOnClickListener(this);
             // TODO Handle the exception
         }
     }
+
+
     public static void extractLatLongFromImage(Context context, Uri imageUri) {
         try {
             ExifInterface exifInterface = new ExifInterface(context.getContentResolver().openInputStream(imageUri));
