@@ -24,5 +24,3 @@ Due to limitations of the free tier of the Render API, please be aware of the fo
 ## Contributing
 
 We welcome contributions from the community to improve and expand the plasticFreeRiver project. Feel free to fork this repository, make changes, and submit pull requests. Let's work together to make our rivers plastic-free!
-
-
