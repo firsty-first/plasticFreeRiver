@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,10 +12,7 @@ import android.os.Bundle;
 import okhttp3.OkHttpClient;
 import retrofit2.Callback;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,11 +30,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-//import com.example.plasticfreeriver.ml.BestFloat16;
-////import com.example.plasticfreeriver.ml.BestFloat32;
-//import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.example.plasticfreeriver.databinding.FragmentHome1Binding;
-import com.example.plasticfreeriver.ml.ModelPlastic;
+//import com.example.plasticfreeriver.ml.ModelPlastic;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -505,59 +498,59 @@ return res;
         super.onDestroy();
         executorService.shutdown(); // Shutdown the executorService when no longer needed
     }
-    void model_32(Uri uri) {
-        try {
-            ModelPlastic model = ModelPlastic.newInstance(getContext());
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, true);
-
-            // Preprocess the image using the same ImageProcessor you've built
-            TensorImage tensorImage = TensorImage.fromBitmap(resizedBitmap);
-            ImageProcessor processor = new ImageProcessor.Builder().build();
-            TensorImage preprocessedImage = processor.process(tensorImage);
-
-            // Run model inference and get the output
-            ModelPlastic.Outputs outputs = model.process(preprocessedImage);
-
-            // Access the output tensor
-            TensorBuffer outputTensor = outputs.getOutputAsTensorBuffer();
-
-            // Process and display the output tensor
-            int count =0;
-            StringBuilder resultBuilder = new StringBuilder();
-            int[] shape = outputTensor.getShape();
-            for (int i = 0; i < shape[1]; i++) {
-                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
-                resultBuilder.append("\n");
-                float core[]=outputTensor.getFloatArray();
-            //    for(int x=0;x<core.length/5;x++)
-                //{
-
-//                    if(core[x]>0.9) {
-//                        count++;
-//                        Log.d("count",Float.toString(core[x]));
-//                    }
-             //   }
-            }
-//            int count =0;
-//            for (int i = 0; i < shape[1]; i++) {
-//                float[] floatArray = outputTensor.getFloatArray();
-//                if(floatArray[i]>0.5)
-//                    count++;
-//                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
+//    void model_32(Uri uri) {
+//        try {
+//            ModelPlastic model = ModelPlastic.newInstance(getContext());
+//            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+//            Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 1024, 1024, true);
 //
+//            // Preprocess the image using the same ImageProcessor you've built
+//            TensorImage tensorImage = TensorImage.fromBitmap(resizedBitmap);
+//            ImageProcessor processor = new ImageProcessor.Builder().build();
+//            TensorImage preprocessedImage = processor.process(tensorImage);
+//
+//            // Run model inference and get the output
+//            ModelPlastic.Outputs outputs = model.process(preprocessedImage);
+//
+//            // Access the output tensor
+//            TensorBuffer outputTensor = outputs.getOutputAsTensorBuffer();
+//
+//            // Process and display the output tensor
+//            int count =0;
+//            StringBuilder resultBuilder = new StringBuilder();
+//            int[] shape = outputTensor.getShape();
+//            for (int i = 0; i < shape[1]; i++) {
+//                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
+//                resultBuilder.append("\n");
+//                float core[]=outputTensor.getFloatArray();
+//            //    for(int x=0;x<core.length/5;x++)
+//                //{
+//
+////                    if(core[x]>0.9) {
+////                        count++;
+////                        Log.d("count",Float.toString(core[x]));
+////                    }
+//             //   }
 //            }
-           // Log.d("count",Integer.toString(count));
-            // Releases model resources if no longer used.
-            model.close();
-
-            // Display the result using a Toast message
-//            Toast.makeText(getContext(), resultBuilder.toString(), Toast.LENGTH_LONG).show();
-            Log.i("result", resultBuilder.toString());
-        } catch (IOException e) {
-            // TODO Handle the exception
-        }
-    }
+////            int count =0;
+////            for (int i = 0; i < shape[1]; i++) {
+////                float[] floatArray = outputTensor.getFloatArray();
+////                if(floatArray[i]>0.5)
+////                    count++;
+////                resultBuilder.append("Label ").append(i).append(": ").append(Arrays.toString(outputTensor.getFloatArray()));
+////
+////            }
+//           // Log.d("count",Integer.toString(count));
+//            // Releases model resources if no longer used.
+//            model.close();
+//
+//            // Display the result using a Toast message
+////            Toast.makeText(getContext(), resultBuilder.toString(), Toast.LENGTH_LONG).show();
+//            Log.i("result", resultBuilder.toString());
+//        } catch (IOException e) {
+//            // TODO Handle the exception
+//        }
+//    }
 
 
     public static void extractLatLongFromImage(Context context, Uri imageUri) {
